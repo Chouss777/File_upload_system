@@ -121,7 +121,9 @@
 <div id="adm-toast"><span class="t-icon" id="adm-toast-icon"></span><span id="adm-toast-msg"></span></div>
 
 <script>
-const API = 'http://localhost:3000/api';
+const API          = 'http://localhost:3000/api';
+const ADMIN_TOKEN  = 'fpk-admin-2026'; /* must match ADMIN_TOKEN in server.js / env */
+const ADMIN_HEADER = { 'x-admin-token': ADMIN_TOKEN };
 
 /* SESSION GUARD */
 const _session = JSON.parse(sessionStorage.getItem('fpk_user') || 'null');
@@ -148,8 +150,11 @@ async function fetchServerFiles() {
 }
 
 async function fetchUsers() {
-  try { const res = await fetch(`${API}/auth/users`); if(!res.ok) throw new Error(); allUsers = await res.json(); }
-  catch { allUsers = []; }
+  try {
+    const res = await fetch(`${API}/auth/users`, { headers: ADMIN_HEADER });
+    if(!res.ok) throw new Error();
+    allUsers = await res.json();
+  } catch { allUsers = []; }
 }
 
 async function init() {
@@ -283,12 +288,12 @@ function openEdit(id){
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 
 async function saveEdit(){
-  const id     =document.getElementById('edit-id').value;
-  const title  =document.getElementById('edit-title').value.trim();
-  const cat    =document.getElementById('edit-cat').value;
-  const course =document.getElementById('edit-course').value.trim();
-  const desc   =document.getElementById('edit-desc').value.trim();
-  const author =document.getElementById('edit-author').value.trim();
+  const id    =document.getElementById('edit-id').value;
+  const title =document.getElementById('edit-title').value.trim();
+  const cat   =document.getElementById('edit-cat').value;
+  const course=document.getElementById('edit-course').value.trim();
+  const desc  =document.getElementById('edit-desc').value.trim();
+  const author=document.getElementById('edit-author').value.trim();
   if(!title){toast('error','Title is required.');return;}
   try{
     const res=await fetch(`${API}/files/${id}`,{
