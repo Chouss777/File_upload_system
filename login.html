@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Apply the dark theme variables globally on this page */
     :root {
       --bg:      #0d0f14;
       --surface: #13161e;
@@ -21,7 +20,6 @@
       --mono:    'Space Mono', monospace;
       --sans:    'DM Sans', sans-serif;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
@@ -34,8 +32,6 @@
       position: relative;
       overflow: hidden;
     }
-
-    /* ── Background grid texture ── */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -45,278 +41,139 @@
       background-size: 40px 40px;
       pointer-events: none;
     }
-
-    /* ── Glow blobs ── */
-    .blob {
-      position: fixed; border-radius: 50%;
-      filter: blur(100px); pointer-events: none; opacity: .12;
-    }
+    .blob { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; opacity: .12; }
     .blob-1 { width: 400px; height: 400px; background: var(--accent);  top: -100px; left: -100px; }
     .blob-2 { width: 300px; height: 300px; background: var(--accent3); bottom: -80px; right: -80px; }
 
-    /* ── Layout: two-panel ── */
     .login-wrapper {
-      display: flex;
-      width: 820px;
-      min-height: 500px;
+      display: flex; width: 820px; min-height: 500px;
       border: 1px solid var(--border);
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
       animation: fadeUp .4s ease forwards;
     }
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ── Left branding panel ── */
     .brand-panel {
-      width: 300px;
-      flex-shrink: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
+      width: 300px; flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
       padding: 40px 36px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
     }
     .brand-panel::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, var(--accent), var(--accent3));
     }
     .brand-top .tag {
-      font-family: var(--mono);
-      font-size: 9px; letter-spacing: 3px;
+      font-family: var(--mono); font-size: 9px; letter-spacing: 3px;
       color: var(--accent); text-transform: uppercase;
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 28px;
     }
     .brand-top .tag::before {
-      content: '';
-      width: 6px; height: 6px; background: var(--accent);
-      border-radius: 50%;
-      animation: blink 1.4s step-end infinite;
+      content: ''; width: 6px; height: 6px; background: var(--accent);
+      border-radius: 50%; animation: blink 1.4s step-end infinite;
     }
     @keyframes blink { 50% { opacity: 0; } }
     .brand-top h1 { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 12px; }
     .brand-top p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-    .brand-stats { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+    .brand-stats  { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
     .brand-stat {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px;
-      background: rgba(240,192,64,.05);
-      border: 1px solid rgba(240,192,64,.1);
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      background: rgba(240,192,64,.05); border: 1px solid rgba(240,192,64,.1);
     }
-    .brand-stat .s-icon {
-      width: 28px; height: 28px;
-      background: rgba(240,192,64,.1);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; color: var(--accent); flex-shrink: 0;
-    }
-    .brand-stat .s-info .s-val  { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--text); }
-    .brand-stat .s-info .s-lbl  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .brand-stat .s-icon { width: 28px; height: 28px; background: rgba(240,192,64,.1); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); flex-shrink: 0; }
+    .brand-stat .s-info .s-val { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--text); }
+    .brand-stat .s-info .s-lbl { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .brand-footer { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 32px; }
 
-    .brand-footer {
-      font-family: var(--mono);
-      font-size: 10px; color: var(--muted);
-      letter-spacing: 1px; margin-top: 32px;
-    }
-
-    /* ── Right form panel ── */
-    .form-panel {
-      flex: 1;
-      background: var(--card);
-      padding: 48px 44px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .form-eyebrow {
-      font-family: var(--mono);
-      font-size: 9px; letter-spacing: 3px;
-      color: var(--accent); text-transform: uppercase;
-      margin-bottom: 10px;
-    }
+    .form-panel { flex: 1; background: var(--card); padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; }
+    .form-eyebrow { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
     .form-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
     .form-sub   { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
 
-    /* ── Role selector ── */
     .role-selector { display: flex; gap: 8px; margin-bottom: 24px; }
-    .role-btn {
-      flex: 1; padding: 9px 12px;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--muted); font-size: 12px; font-weight: 600;
-      font-family: var(--mono); text-transform: uppercase; letter-spacing: .5px;
-      cursor: pointer; transition: all .15s;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-    }
+    .role-btn { flex: 1; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 12px; font-weight: 600; font-family: var(--mono); text-transform: uppercase; letter-spacing: .5px; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 7px; }
     .role-btn:hover  { border-color: var(--muted); color: var(--text); }
     .role-btn.active { background: rgba(240,192,64,.08); border-color: var(--accent); color: var(--accent); }
 
-    /* ── Form fields ── */
-    .field-group   { margin-bottom: 16px; }
-    .field-label {
-      font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--muted);
-      display: block; margin-bottom: 7px;
-    }
-    .field-wrap    { position: relative; }
-    .field-input {
-      width: 100%;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--text); padding: 11px 14px;
-      font-size: 13px; font-family: var(--sans);
-      outline: none; transition: border-color .2s;
-      border-radius: 0;
-    }
+    .field-group  { margin-bottom: 16px; }
+    .field-label  { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 7px; }
+    .field-wrap   { position: relative; }
+    .field-input  { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 11px 14px; font-size: 13px; font-family: var(--sans); outline: none; transition: border-color .2s; border-radius: 0; }
     .field-input:focus        { border-color: var(--accent); }
     .field-input::placeholder { color: var(--muted); }
     .field-input.has-icon     { padding-left: 38px; }
-    .field-icon {
-      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      color: var(--muted); font-size: 12px; pointer-events: none;
-    }
-    .eye-toggle {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: var(--muted);
-      cursor: pointer; font-size: 13px; padding: 2px;
-      transition: color .15s;
-    }
+    .field-icon   { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 12px; pointer-events: none; }
+    .eye-toggle   { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px; transition: color .15s; }
     .eye-toggle:hover { color: var(--text); }
 
-    /* ── Remember / forgot row ── */
-    .form-row-util {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .check-wrap {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: var(--muted); cursor: pointer;
-    }
+    .form-row-util { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .check-wrap    { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); cursor: pointer; }
     .check-wrap input[type="checkbox"] { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; }
-    .forgot-link {
-      font-family: var(--mono); font-size: 10px; letter-spacing: .5px;
-      color: var(--muted); background: none; border: none;
-      cursor: pointer; text-transform: uppercase; text-decoration: underline;
-      text-decoration-color: transparent; transition: all .15s;
-    }
+    .forgot-link   { font-family: var(--mono); font-size: 10px; letter-spacing: .5px; color: var(--muted); background: none; border: none; cursor: pointer; text-transform: uppercase; text-decoration: underline; text-decoration-color: transparent; transition: all .15s; }
     .forgot-link:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
-    /* ── Submit button ── */
-    .submit-btn {
-      width: 100%;
-      background: var(--accent); color: #0d0f14;
-      border: none; padding: 13px;
-      font-weight: 700; font-size: 13px; letter-spacing: 1px;
-      text-transform: uppercase; cursor: pointer;
-      font-family: var(--mono); transition: opacity .2s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
+    .submit-btn    { width: 100%; background: var(--accent); color: #0d0f14; border: none; padding: 13px; font-weight: 700; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: var(--mono); transition: opacity .2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
     .submit-btn:hover    { opacity: .88; }
     .submit-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-    /* ── Error message ── */
-    .error-box {
-      display: none;
-      background: rgba(224,92,92,.08);
-      border: 1px solid rgba(224,92,92,.3);
-      padding: 11px 14px; margin-bottom: 18px;
-      font-size: 12px; color: var(--accent2);
-      display: none; align-items: center; gap: 8px;
-    }
+    .error-box { display: none; background: rgba(224,92,92,.08); border: 1px solid rgba(224,92,92,.3); padding: 11px 14px; margin-bottom: 18px; font-size: 12px; color: var(--accent2); align-items: center; gap: 8px; }
     .error-box.show { display: flex; }
 
-    /* ── Divider ── */
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .divider span { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
 
-    /* ── Admin link ── */
-    .admin-link-row {
-      text-align: center;
-    }
-    .admin-link {
-      font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
-      color: var(--muted); text-transform: uppercase; cursor: pointer;
-      background: none; border: none; transition: color .15s;
-    }
+    .bottom-links { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .admin-link   { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--muted); background: none; border: none; cursor: pointer; text-transform: uppercase; transition: color .15s; }
     .admin-link:hover { color: var(--accent); }
-    .admin-link i { margin-right: 6px; }
+    .register-link { color: var(--accent3); }
+    .register-link:hover { color: var(--accent3); opacity: .8; }
 
-    /* ── Input shake animation on error ── */
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%      { transform: translateX(-6px); }
-      40%      { transform: translateX(6px); }
-      60%      { transform: translateX(-4px); }
-      80%      { transform: translateX(4px); }
-    }
+    @keyframes shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-6px); } 40% { transform:translateX(6px); } 60% { transform:translateX(-4px); } 80% { transform:translateX(4px); } }
     .shake { animation: shake .35s ease; }
-
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar       { width: 5px; }
+    ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); }
   </style>
 </head>
 <body>
 
-<!-- Background blobs -->
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 
 <div class="login-wrapper">
 
-  <!-- ══ LEFT: BRAND PANEL ══ -->
+  <!-- LEFT PANEL -->
   <div class="brand-panel">
     <div class="brand-top">
       <div class="tag">FPK Archive</div>
       <h1>Academic<br/>Repository</h1>
       <p>A shared space for students to upload, discover, and download academic files.</p>
-
       <div class="brand-stats">
         <div class="brand-stat">
           <div class="s-icon"><i class="fa-solid fa-file"></i></div>
-          <div class="s-info">
-            <div class="s-val">500+</div>
-            <div class="s-lbl">Files in the archive</div>
-          </div>
+          <div class="s-info"><div class="s-val">500+</div><div class="s-lbl">Files in the archive</div></div>
         </div>
         <div class="brand-stat">
           <div class="s-icon" style="background:rgba(77,212,172,.1);color:var(--accent3);"><i class="fa-solid fa-users"></i></div>
-          <div class="s-info">
-            <div class="s-val">120+</div>
-            <div class="s-lbl">Active contributors</div>
-          </div>
+          <div class="s-info"><div class="s-val">120+</div><div class="s-lbl">Active contributors</div></div>
         </div>
         <div class="brand-stat">
           <div class="s-icon" style="background:rgba(91,143,249,.1);color:#5b8ff9;"><i class="fa-solid fa-download"></i></div>
-          <div class="s-info">
-            <div class="s-val">8.4K</div>
-            <div class="s-lbl">Total downloads</div>
-          </div>
+          <div class="s-info"><div class="s-val">8.4K</div><div class="s-lbl">Total downloads</div></div>
         </div>
       </div>
     </div>
-
     <div class="brand-footer">© 2025 FPK Archive · MSc Data Science</div>
   </div>
 
-  <!-- ══ RIGHT: FORM PANEL ══ -->
+  <!-- RIGHT FORM PANEL -->
   <div class="form-panel">
-
     <div class="form-eyebrow">// user access</div>
     <div class="form-title">Welcome back</div>
     <div class="form-sub">Sign in to access the archive and your uploads.</div>
 
-    <!-- Role selector -->
     <div class="role-selector">
       <button class="role-btn active" id="role-student" onclick="selectRole('student')">
         <i class="fa-solid fa-graduation-cap"></i> Student
@@ -326,22 +183,19 @@
       </button>
     </div>
 
-    <!-- Error box -->
     <div class="error-box" id="error-box">
       <i class="fa-solid fa-circle-xmark"></i>
       <span id="error-msg">Invalid username or password.</span>
     </div>
 
-    <!-- Username -->
     <div class="field-group">
       <label class="field-label" for="username">Username</label>
       <div class="field-wrap">
         <i class="fa-solid fa-user field-icon"></i>
-        <input type="text" id="username" class="field-input has-icon" placeholder="e.g. oussama.chabani" autocomplete="username" />
+        <input type="text" id="username" class="field-input has-icon" placeholder="e.g. oussama" autocomplete="username" />
       </div>
     </div>
 
-    <!-- Password -->
     <div class="field-group">
       <label class="field-label" for="password">Password</label>
       <div class="field-wrap">
@@ -353,41 +207,31 @@
       </div>
     </div>
 
-    <!-- Remember / Forgot -->
     <div class="form-row-util">
       <label class="check-wrap">
-        <input type="checkbox" id="remember" />
-        Remember me
+        <input type="checkbox" id="remember" /> Remember me
       </label>
       <button class="forgot-link" onclick="showForgot()">Forgot password?</button>
     </div>
 
-    <!-- Submit -->
     <button class="submit-btn" id="login-btn" onclick="doLogin()">
       <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
     </button>
 
-    <!-- Divider -->
     <div class="divider"><span>or</span></div>
 
-    <!-- Admin link -->
-    <div class="admin-link-row">
+    <div class="bottom-links">
       <button class="admin-link" onclick="goAdmin()">
         <i class="fa-solid fa-shield-halved"></i> Access admin panel instead
       </button>
+      <button class="admin-link register-link" onclick="window.location.href='register.html'">
+        <i class="fa-solid fa-user-plus"></i> Create a new account
+      </button>
     </div>
-
   </div>
 </div>
 
 <script>
-  /* ── CREDENTIALS (demo — replace with real auth) ── */
-  const USERS = [
-    { username: 'oussama',  password: 'fpk2025',  role: 'student', display: 'Oussama Chabani'  },
-    { username: 'student',  password: 'student123',role: 'student', display: 'Student User'      },
-    { username: 'admin',    password: 'fpk2025',   role: 'admin',   display: 'Administrator'     },
-  ];
-
   let selectedRole = 'student';
 
   function selectRole(role) {
@@ -408,82 +252,62 @@
     const box = document.getElementById('error-box');
     document.getElementById('error-msg').textContent = msg;
     box.classList.add('show');
-    /* Shake the inputs */
     ['username','password'].forEach(id => {
       const el = document.getElementById(id);
       el.classList.remove('shake');
-      void el.offsetWidth; // reflow to restart animation
+      void el.offsetWidth;
       el.classList.add('shake');
       el.style.borderColor = 'var(--accent2)';
       setTimeout(() => { el.style.borderColor = ''; el.classList.remove('shake'); }, 800);
     });
   }
 
-  function clearError() {
-    document.getElementById('error-box').classList.remove('show');
-  }
+  function clearError() { document.getElementById('error-box').classList.remove('show'); }
 
-  function doLogin() {
+  async function doLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const btn      = document.getElementById('login-btn');
 
     clearError();
-
     if (!username) { showError('Please enter your username.'); return; }
     if (!password) { showError('Please enter your password.'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in…';
 
-    /* Simulate async auth (replace with real fetch to your backend) */
-    setTimeout(() => {
-      const match = USERS.find(u =>
-        u.username === username &&
-        u.password === password &&
-        (selectedRole === 'admin' ? u.role === 'admin' : true)
-      );
+    try {
+      const res  = await fetch('http://localhost:3000/api/auth/login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username, password, role: selectedRole }),
+      });
+      const data = await res.json();
 
-      if (match) {
-        /* Store session info */
-        sessionStorage.setItem('fpk_user', JSON.stringify({ username: match.username, display: match.display, role: match.role }));
-
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Redirecting…';
-
-        setTimeout(() => {
-          if (match.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'index.html';
-          }
-        }, 500);
-      } else {
-        if (selectedRole === 'admin') {
-          showError('Invalid admin credentials. Check your username and password.');
-        } else {
-          showError('Invalid username or password. Please try again.');
-        }
+      if (!res.ok) {
+        showError(data.error || 'Login failed.');
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In';
+        return;
       }
-    }, 700);
+
+      sessionStorage.setItem('fpk_user', JSON.stringify(data.user));
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Redirecting…';
+      setTimeout(() => {
+        window.location.href = data.user.role === 'admin' ? 'admin.html' : 'index.html';
+      }, 500);
+
+    } catch {
+      showError('Cannot reach server. Is it running on port 3000?');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In';
+    }
   }
 
-  function goAdmin() {
-    selectRole('admin');
-    document.getElementById('username').focus();
-  }
+  function goAdmin() { selectRole('admin'); document.getElementById('username').focus(); }
+  function showForgot() { showError('Password reset is not available. Contact your administrator.'); }
 
-  function showForgot() {
-    showError('Password reset is not available in this demo. Contact your administrator.');
-  }
-
-  /* Allow Enter key to submit */
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-
-  /* Clear error on any input */
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   ['username','password'].forEach(id => {
     document.getElementById(id).addEventListener('input', clearError);
   });
