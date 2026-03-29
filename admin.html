@@ -319,41 +319,30 @@
 
 <script>
 const API = 'http://localhost:3000/api';
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'fpk2025';
 
-/* ────────────── AUTH ────────────── */
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    document.getElementById('login-overlay').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('sidebar-username').textContent = u;
-    init();
-  } else {
-    const err = document.getElementById('login-err');
-    err.style.display = 'block';
-    document.getElementById('login-err-msg').textContent = 'Invalid username or password.';
-    document.getElementById('login-pass').value = '';
-    setTimeout(() => err.style.display = 'none', 3000);
-  }
+/* ── SESSION GUARD: redirect to login.html if no valid admin session ── */
+const _session = JSON.parse(sessionStorage.getItem('fpk_user') || 'null');
+if (!_session || _session.role !== 'admin') {
+  window.location.href = 'login.html';
 }
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('login-overlay').style.display !== 'none') doLogin();
+
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('login-overlay');
+  if (overlay) overlay.style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const nameEl = document.getElementById('sidebar-username');
+  if (nameEl) nameEl.textContent = _session?.display || _session?.username || 'Admin';
+  init();
 });
+
 function doLogout() {
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-overlay').style.display = 'flex';
-  document.getElementById('login-user').value = '';
-  document.getElementById('login-pass').value = '';
+  sessionStorage.removeItem('fpk_user');
+  window.location.href = 'login.html';
 }
-function togglePwd() {
-  const inp = document.getElementById('login-pass');
-  const ico = document.getElementById('eye-icon');
-  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'fa-solid fa-eye-slash'; }
-  else                         { inp.type = 'password'; ico.className = 'fa-solid fa-eye'; }
-}
+
+/* Legacy stubs kept so existing onclick attributes don't throw errors */
+function doLogin()   {}
+function togglePwd() {}
 
 /* ────────────── DATA ────────────── */
 let serverFiles = [];

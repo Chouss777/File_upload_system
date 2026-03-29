@@ -4,685 +4,384 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FPK Archive</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
-  <script>
-    tailwind.config = { 
-      theme: {
-        extend: {
-          colors: { primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } },
-          fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
-        }
-      }
+  <style>
+    :root {
+      --bg:#0d0f14;--surface:#13161e;--card:#181c27;--border:#252a38;
+      --accent:#f0c040;--accent2:#e05c5c;--accent3:#4dd4ac;
+      --text:#e8eaf0;--muted:#5a607a;
+      --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
     }
-  </script>
+    *,*::before,*::after{box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);margin:0;min-height:100vh;font-family:var(--sans);}
+    .u-tab{display:none;} .u-tab.active{display:block;}
+    .u-nav{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-radius:6px;transition:all .15s;border:1px solid transparent;margin-bottom:2px;background:none;}
+    .u-nav i{width:16px;text-align:center;font-size:12px;}
+    .u-nav:hover{color:var(--text);background:rgba(255,255,255,.04);}
+    .u-nav.active{color:var(--accent);background:rgba(240,192,64,.08);border-color:rgba(240,192,64,.2);}
+    .u-stat-card{background:var(--card);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;}
+    .u-stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--bar,var(--accent));}
+    .u-stat-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+    .u-stat-val{font-size:32px;font-weight:700;color:var(--text);font-family:var(--mono);}
+    .u-stat-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+    .u-section{background:var(--card);border:1px solid var(--border);overflow:hidden;}
+    .u-section-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .u-section-title{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono);letter-spacing:.5px;}
+    .u-file-card{background:var(--card);border:1px solid var(--border);padding:18px;transition:border-color .2s,transform .2s;}
+    .u-file-card:hover{border-color:rgba(240,192,64,.3);transform:translateY(-2px);}
+    .u-pill{font-family:var(--mono);font-size:10px;font-weight:700;padding:5px 14px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;}
+    .u-pill:hover{border-color:var(--muted);color:var(--text);}
+    .u-pill.active{background:var(--accent);color:#0d0f14;border-color:var(--accent);}
+    .u-input,.u-select,.u-textarea{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:13px;font-family:var(--sans);outline:none;transition:border-color .15s;box-sizing:border-box;}
+    .u-input:focus,.u-select:focus,.u-textarea:focus{border-color:var(--accent);}
+    .u-input::placeholder,.u-textarea::placeholder{color:var(--muted);}
+    .u-select option{background:var(--card);}
+    .u-textarea{resize:vertical;min-height:80px;width:100%;}
+    .u-file-input{width:100%;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:8px 12px;cursor:pointer;}
+    .u-file-input::file-selector-button{background:rgba(240,192,64,.1);color:var(--accent);border:1px solid rgba(240,192,64,.3);padding:4px 12px;font-size:11px;font-family:var(--mono);font-weight:700;cursor:pointer;margin-right:12px;text-transform:uppercase;letter-spacing:.5px;}
+    .u-file-input::file-selector-button:hover{background:rgba(240,192,64,.2);}
+    .u-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+    .u-btn-primary{background:var(--accent);color:#0d0f14;border:none;padding:10px 20px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:var(--mono);display:inline-flex;align-items:center;gap:8px;transition:opacity .2s;}
+    .u-btn-primary:hover{opacity:.88;} .u-btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+    .u-link{background:none;border:none;color:var(--accent);font-size:12px;font-family:var(--mono);cursor:pointer;padding:0;letter-spacing:.5px;}
+    .u-link:hover{opacity:.75;}
+    .u-row-hover{transition:background .15s;} .u-row-hover:hover{background:rgba(255,255,255,.025);}
+    ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--border);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .3s ease forwards;opacity:0;}
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
-
-<!-- ── TOAST ── -->
-<div id="toast" class="fixed top-5 right-5 z-50 opacity-0 pointer-events-none">
-  <div class="flex items-center gap-3 bg-white border border-slate-200 shadow-xl rounded-xl px-5 py-3.5 min-w-[260px]">
-    <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0"></div>
-    <span id="toast-msg" class="text-sm font-medium text-slate-700"></span>
+<body>
+<div id="toast" style="position:fixed;top:20px;right:20px;z-index:999;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;transform:translateY(-8px);">
+  <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);padding:12px 18px;min-width:260px;">
+    <div id="toast-icon" style="width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;"></div>
+    <span id="toast-msg" style="font-size:13px;color:var(--text);"></span>
   </div>
 </div>
-
-<div class="flex h-screen overflow-hidden">
-
-  <!-- ══════════ SIDEBAR ══════════ -->
-  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm shrink-0">
-
-    <!-- Logo -->
-    <div class="px-6 py-6 border-b border-slate-100">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow">
-          <i class="fa-solid fa-book-open text-white text-sm"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-slate-800 text-base leading-tight">FPK Archive</h1>
-          <p class="text-xs text-slate-400 font-medium">Academic Repository</p>
-        </div>
-      </div>
+<div style="display:flex;height:100vh;overflow:hidden;">
+  <aside style="width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;">
+    <div style="padding:24px 20px 20px;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:6px;">// archive</span>
+      <div style="font-size:17px;font-weight:700;color:var(--text);">FPK Archive</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Academic Repository</div>
     </div>
-
-    <!-- Nav -->
-    <nav class="flex-1 px-3 py-5 space-y-1">
-      <button onclick="switchTab('home')"   id="nav-home"   class="sidebar-link active w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 transition-all">
-        <i class="nav-icon fa-solid fa-house-chimney w-4 text-slate-400"></i> Home
+    <nav style="flex:1;padding:16px 10px;">
+      <button onclick="switchTab('home')"   id="nav-home"   class="u-nav active"><i class="fa-solid fa-house-chimney"></i> Home</button>
+      <button onclick="switchTab('vault')"  id="nav-vault"  class="u-nav">
+        <i class="fa-solid fa-vault"></i> Vault
+        <span id="vault-badge" style="margin-left:auto;background:rgba(240,192,64,.15);color:var(--accent);font-size:10px;font-weight:700;padding:2px 7px;font-family:var(--mono);">0</span>
       </button>
-      <button onclick="switchTab('vault')"  id="nav-vault"  class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 transition-all">
-        <i class="nav-icon fa-solid fa-vault w-4 text-slate-400"></i> Vault
-        <span id="vault-badge" class="ml-auto bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">0</span>
-      </button>
-      <button onclick="switchTab('upload')" id="nav-upload" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 transition-all">
-        <i class="nav-icon fa-solid fa-cloud-arrow-up w-4 text-slate-400"></i> Upload
-      </button>
+      <button onclick="switchTab('upload')" id="nav-upload" class="u-nav"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
     </nav>
-
-    <!-- User -->
-    <div class="px-4 py-4 border-t border-slate-100">
-      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">OC</div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-slate-700 truncate">Oussama Chabani</p>
-          <p class="text-xs text-slate-400 truncate">MSc · Data Science</p>
+    <div style="padding:16px 14px;border-top:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.15);padding:10px 12px;">
+        <div id="user-avatar" style="width:32px;height:32px;flex-shrink:0;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0d0f14;font-family:var(--mono);">ST</div>
+        <div style="flex:1;min-width:0;">
+          <div id="user-name" style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Student</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">FPK Archive</div>
         </div>
-        <span class="text-xs bg-blue-100 text-blue-600 font-semibold px-2 py-0.5 rounded-full">You</span>
+        <button onclick="doLogout()" title="Log out" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px;transition:color .15s;" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
       </div>
     </div>
   </aside>
-
-  <!-- ══════════ MAIN ══════════ -->
-  <main class="flex-1 overflow-y-auto">
-
-    <!-- ────────── HOME ────────── -->
-    <div id="tab-home" class="tab-content active p-8">
-      <div class="max-w-5xl mx-auto">
-
-        <div class="mb-8">
-          <h2 class="text-2xl font-bold text-slate-800">Good afternoon, Oussama 👋</h2>
-          <p class="text-slate-500 mt-1 text-sm">Explore files shared by your peers, or contribute your own to the archive.</p>
+  <main style="flex:1;overflow-y:auto;background:var(--bg);">
+    <div id="tab-home" class="u-tab active" style="padding:32px 36px;">
+      <div style="max-width:960px;margin:0 auto;">
+        <div style="margin-bottom:28px;">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">// dashboard</div>
+          <h2 id="greeting" style="font-size:22px;font-weight:700;color:var(--text);margin:0 0 4px;">Good afternoon</h2>
+          <p style="color:var(--muted);font-size:13px;margin:0;">Explore files shared by your peers, or contribute your own to the archive.</p>
         </div>
-
-        <!-- Stats -->
-        <div class="grid grid-cols-4 gap-4 mb-8">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Files</span>
-              <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-file text-blue-500 text-xs"></i></div>
-            </div>
-            <p class="text-3xl font-bold text-slate-800" id="stat-total">0</p>
-            <p class="text-xs text-slate-400 mt-1">in the archive</p>
-          </div>
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Shared by Peers</span>
-              <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-users text-indigo-500 text-xs"></i></div>
-            </div>
-            <p class="text-3xl font-bold text-slate-800" id="stat-shared">0</p>
-            <p class="text-xs text-slate-400 mt-1">community files</p>
-          </div>
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">My Uploads</span>
-              <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-cloud-arrow-up text-emerald-500 text-xs"></i></div>
-            </div>
-            <p class="text-3xl font-bold text-slate-800" id="stat-mine">0</p>
-            <p class="text-xs text-slate-400 mt-1">contributed by you</p>
-          </div>
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Contributors</span>
-              <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-user-group text-amber-500 text-xs"></i></div>
-            </div>
-            <p class="text-3xl font-bold text-slate-800" id="stat-contributors">0</p>
-            <p class="text-xs text-slate-400 mt-1">active students</p>
-          </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+          <div class="u-stat-card" style="--bar:var(--accent);"><div class="u-stat-label">Total Files</div><div class="u-stat-val" id="stat-total">0</div><div class="u-stat-sub">in the archive</div></div>
+          <div class="u-stat-card" style="--bar:#5b8ff9;"><div class="u-stat-label">Shared by Peers</div><div class="u-stat-val" id="stat-shared">0</div><div class="u-stat-sub">community files</div></div>
+          <div class="u-stat-card" style="--bar:var(--accent3);"><div class="u-stat-label">My Uploads</div><div class="u-stat-val" id="stat-mine">0</div><div class="u-stat-sub">contributed by you</div></div>
+          <div class="u-stat-card" style="--bar:var(--accent2);"><div class="u-stat-label">Contributors</div><div class="u-stat-val" id="stat-contributors">0</div><div class="u-stat-sub">active students</div></div>
         </div>
-
-        <!-- Recently Shared by Peers -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5">
-          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-users text-blue-500 text-sm"></i>
-              <h3 class="font-semibold text-slate-700 text-sm">Recently Shared by Peers</h3>
-            </div>
-            <button onclick="switchTab('vault')" class="text-xs text-blue-600 font-medium hover:underline">View all →</button>
+        <div class="u-section" style="margin-bottom:20px;">
+          <div class="u-section-head">
+            <div class="u-section-title"><i class="fa-solid fa-users" style="color:var(--accent);margin-right:8px;"></i>Recently Shared by Peers</div>
+            <button onclick="switchTab('vault')" class="u-link">View all →</button>
           </div>
-          <div id="recent-shared" class="divide-y divide-slate-50"></div>
+          <div id="recent-shared"></div>
         </div>
-
-        <!-- My Recent Uploads -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-cloud-arrow-up text-emerald-500 text-sm"></i>
-              <h3 class="font-semibold text-slate-700 text-sm">My Recent Uploads</h3>
-            </div>
-            <button onclick="switchTab('upload')" class="text-xs text-blue-600 font-medium hover:underline">+ Upload →</button>
+        <div class="u-section">
+          <div class="u-section-head">
+            <div class="u-section-title"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent3);margin-right:8px;"></i>My Recent Uploads</div>
+            <button onclick="switchTab('upload')" class="u-link">+ Upload →</button>
           </div>
-          <div id="recent-mine" class="divide-y divide-slate-50">
-            <div id="mine-empty" class="px-6 py-8 text-center text-slate-400 text-sm">
-              <i class="fa-solid fa-inbox text-2xl mb-2 block text-slate-200"></i>
+          <div id="recent-mine">
+            <div id="mine-empty" style="padding:36px;text-align:center;color:var(--muted);font-size:13px;">
+              <i class="fa-solid fa-inbox" style="font-size:24px;display:block;margin-bottom:10px;opacity:.2;"></i>
               You haven't uploaded anything yet.
-              <button onclick="switchTab('upload')" class="text-blue-500 hover:underline font-medium ml-1">Share your first file →</button>
+              <button onclick="switchTab('upload')" class="u-link" style="margin-left:6px;">Share your first file →</button>
             </div>
           </div>
         </div>
-
       </div>
     </div>
-
-    <!-- ────────── VAULT ────────── -->
-    <div id="tab-vault" class="tab-content p-8">
-      <div class="max-w-5xl mx-auto">
-
-        <!-- Header + Search -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div id="tab-vault" class="u-tab" style="padding:32px 36px;">
+      <div style="max-width:960px;margin:0 auto;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
           <div>
-            <h2 class="text-2xl font-bold text-slate-800">The Vault</h2>
-            <p class="text-slate-500 text-sm mt-0.5">Browse all files shared by the community.</p>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">// vault</div>
+            <h2 style="font-size:22px;font-weight:700;color:var(--text);margin:0 0 4px;">The Vault</h2>
+            <p style="color:var(--muted);font-size:13px;margin:0;">Browse all files shared by the community.</p>
           </div>
-          <div class="flex items-center gap-3 flex-wrap">
-            <div class="relative">
-              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="text" id="search-input" placeholder="Search files…" oninput="renderVault()"
-                class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 w-48 shadow-sm" />
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div style="position:relative;">
+              <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:11px;pointer-events:none;"></i>
+              <input type="text" id="search-input" placeholder="Search files…" oninput="renderVault()" class="u-input" style="padding-left:30px;width:180px;" />
             </div>
-            <select id="filter-cat" onchange="renderVault()"
-              class="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-sm text-slate-600">
+            <select id="filter-cat" onchange="renderVault()" class="u-select">
               <option value="">All Categories</option>
-              <option value="Exam">Exam</option>
-              <option value="Notes">Notes</option>
-              <option value="Resume">Resume</option>
-              <option value="Research">Research</option>
-              <option value="Other">Other</option>
+              <option>Exam</option><option>Notes</option><option>Resume</option><option>Research</option><option>Other</option>
             </select>
           </div>
         </div>
-
-        <!-- Filter Pills -->
-        <div class="flex items-center gap-2 mb-6">
-          <button onclick="setVaultFilter('all')"    id="pill-all"    class="pill-active   text-xs font-semibold px-4 py-1.5 rounded-full transition-all">All Files</button>
-          <button onclick="setVaultFilter('shared')" id="pill-shared" class="pill-inactive text-xs font-semibold px-4 py-1.5 rounded-full transition-all">Shared by Peers</button>
-          <button onclick="setVaultFilter('mine')"   id="pill-mine"   class="pill-inactive text-xs font-semibold px-4 py-1.5 rounded-full transition-all">My Uploads</button>
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button onclick="setVaultFilter('all')"    id="pill-all"    class="u-pill active">All Files</button>
+          <button onclick="setVaultFilter('shared')" id="pill-shared" class="u-pill">Shared by Peers</button>
+          <button onclick="setVaultFilter('mine')"   id="pill-mine"   class="u-pill">My Uploads</button>
         </div>
-
-        <!-- Loading state -->
-        <div id="vault-loading" class="hidden py-16 text-center">
-          <i class="fa-solid fa-spinner fa-spin text-blue-400 text-2xl mb-3 block"></i>
-          <p class="text-slate-400 text-sm">Loading files from server…</p>
+        <div id="vault-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
+        <div id="vault-empty" style="display:none;padding:60px;text-align:center;color:var(--muted);">
+          <i class="fa-solid fa-folder-open" style="font-size:28px;display:block;margin-bottom:12px;opacity:.2;"></i>
+          <div style="font-weight:600;margin-bottom:4px;color:var(--text);">No files found</div>
+          <div style="font-size:13px;">Try a different filter or <button onclick="switchTab('upload')" class="u-link">share a file</button>.</div>
         </div>
-
-        <div id="vault-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-        <div id="vault-empty" class="hidden py-20 text-center">
-          <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-folder-open text-slate-300 text-2xl"></i>
-          </div>
-          <p class="text-slate-500 font-medium">No files found</p>
-          <p class="text-slate-400 text-sm mt-1">Try a different filter or
-            <button onclick="switchTab('upload')" class="text-blue-500 hover:underline">share a file</button>.
-          </p>
-        </div>
-
       </div>
     </div>
-
-    <!-- ────────── UPLOAD ────────── -->
-    <div id="tab-upload" class="tab-content p-8">
-      <div class="max-w-2xl mx-auto">
-
-        <div class="mb-7">
-          <h2 class="text-2xl font-bold text-slate-800">Share a File</h2>
-          <p class="text-slate-500 text-sm mt-0.5">Contribute to the community — your upload will appear in the shared Vault instantly.</p>
+    <div id="tab-upload" class="u-tab" style="padding:32px 36px;">
+      <div style="max-width:600px;margin:0 auto;">
+        <div style="margin-bottom:24px;">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">// contribute</div>
+          <h2 style="font-size:22px;font-weight:700;color:var(--text);margin:0 0 4px;">Share a File</h2>
+          <p style="color:var(--muted);font-size:13px;margin:0;">Contribute to the community — your upload will appear in the Vault instantly.</p>
         </div>
-
-        <!-- Notice -->
-        <div class="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl px-5 py-4 mb-6">
-          <i class="fa-solid fa-globe text-blue-500 mt-0.5"></i>
-          <p class="text-sm text-blue-700"><strong>Visible to everyone.</strong> Files you upload are shared with all students in the repository and saved on the server.</p>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);padding:14px 16px;margin-bottom:20px;">
+          <i class="fa-solid fa-globe" style="color:var(--accent);margin-top:1px;font-size:13px;"></i>
+          <p style="font-size:13px;color:var(--muted);margin:0;"><span style="color:var(--accent);font-weight:700;">Visible to everyone.</span> Files you upload are shared with all students and saved on the server.</p>
         </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-
-          <!-- Drop Zone -->
-          <div id="drop-zone"
-            class="border-2 border-dashed border-slate-200 rounded-xl mx-6 mt-6 p-10 text-center cursor-pointer transition-all"
-            ondragover="event.preventDefault(); this.classList.add('drag-over')"
-            ondragleave="this.classList.remove('drag-over')"
+        <div class="u-section">
+          <div id="drop-zone" style="border:2px dashed var(--border);margin:20px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;"
+            ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='rgba(240,192,64,.04)';"
+            ondragleave="this.style.borderColor='var(--border)';this.style.background='';"
             ondrop="handleDrop(event)">
-            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <i class="fa-solid fa-cloud-arrow-up text-blue-500 text-2xl"></i>
+            <div style="width:48px;height:48px;background:rgba(240,192,64,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+              <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent);font-size:20px;"></i>
             </div>
-            <p class="font-semibold text-slate-700 text-sm">Drag & drop a file here</p>
-            <p class="text-xs text-slate-400 mt-1">or use the file picker below — PDF, DOCX, PNG, PPTX supported</p>
-            <div id="drop-filename" class="mt-3 hidden">
-              <span class="inline-flex items-center gap-2 text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full font-medium">
-                <i class="fa-solid fa-file-check"></i>
-                <span id="drop-name-text"></span>
+            <div style="font-weight:700;color:var(--text);font-size:13px;margin-bottom:4px;">Drag &amp; drop a file here</div>
+            <div style="font-size:12px;color:var(--muted);">or use the file picker below — PDF, DOCX, PNG, PPTX supported</div>
+            <div id="drop-filename" style="display:none;margin-top:12px;">
+              <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(240,192,64,.1);color:var(--accent);font-size:11px;padding:4px 12px;font-family:var(--mono);">
+                <i class="fa-solid fa-file-check"></i><span id="drop-name-text"></span>
               </span>
             </div>
           </div>
-
-          <!-- Form Fields -->
-          <div class="px-6 pt-6 pb-6 space-y-5">
-
-            <!-- File Picker -->
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                Attach File <span class="text-red-400">*</span>
-              </label>
-              <input type="file" id="upload-file"
-                accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.pptx,.xlsx,.txt"
-                onchange="onFileSelected(event)"
-                class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold hover:file:bg-blue-100 cursor-pointer border border-slate-200 rounded-xl p-2 shadow-sm" />
+          <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:16px;">
+            <div><label class="u-label">Attach File <span style="color:var(--accent2);">*</span></label><input type="file" id="upload-file" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.pptx,.xlsx,.txt" onchange="onFileSelected(event)" class="u-file-input" /></div>
+            <div><label class="u-label">File Title <span style="color:var(--accent2);">*</span></label><input type="text" id="upload-title" placeholder="e.g. Linear Algebra Midterm 2025" class="u-input" style="width:100%;" /></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div><label class="u-label">Category <span style="color:var(--accent2);">*</span></label><select id="upload-category" class="u-select" style="width:100%;"><option value="">— Select —</option><option value="Exam">Exam</option><option value="Notes">Notes</option><option value="Resume">Resume</option><option value="Research">Research</option><option value="Other">Other</option></select></div>
+              <div><label class="u-label">Course / Module</label><input type="text" id="upload-course" placeholder="e.g. CS 301" class="u-input" style="width:100%;" /></div>
             </div>
-
-            <!-- Title -->
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                File Title <span class="text-red-400">*</span>
-              </label>
-              <input type="text" id="upload-title" placeholder="e.g. Linear Algebra Midterm 2025"
-                class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-slate-300 shadow-sm" />
-            </div>
-
-            <!-- Category + Course -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">
-                  Category <span class="text-red-400">*</span>
-                </label>
-                <select id="upload-category"
-                  class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-sm bg-white text-slate-600">
-                  <option value="">— Select —</option>
-                  <option value="Exam">📄 Exam</option>
-                  <option value="Notes">📝 Notes</option>
-                  <option value="Resume">📋 Resume</option>
-                  <option value="Research">🔬 Research</option>
-                  <option value="Other">📁 Other</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Course / Module</label>
-                <input type="text" id="upload-course" placeholder="e.g. CS 301"
-                  class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-slate-300 shadow-sm" />
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Description</label>
-              <textarea id="upload-desc" rows="3"
-                placeholder="Brief description so peers know what's inside…"
-                class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-slate-300 shadow-sm resize-none"></textarea>
-            </div>
-
-            <!-- Submit -->
-            <div class="flex items-center justify-between pt-2">
-              <p class="text-xs text-slate-400">
-                <i class="fa-solid fa-users mr-1 text-blue-400"></i>Shared with all students instantly
-              </p>
-              <button id="upload-btn" onclick="handleUpload()"
-                class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-share-nodes"></i> Share to Vault
-              </button>
+            <div><label class="u-label">Description</label><textarea id="upload-desc" rows="3" placeholder="Brief description so peers know what's inside…" class="u-textarea"></textarea></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;">
+              <span style="font-size:11px;color:var(--muted);font-family:var(--mono);"><i class="fa-solid fa-users" style="margin-right:6px;color:var(--accent3);"></i>Shared instantly</span>
+              <button id="upload-btn" onclick="handleUpload()" class="u-btn-primary"><i class="fa-solid fa-share-nodes"></i> Share to Vault</button>
             </div>
           </div>
         </div>
-
-        <!-- Tips -->
-        <div class="mt-5 bg-blue-50 border border-blue-100 rounded-2xl px-5 py-4">
-          <p class="text-xs font-semibold text-blue-700 mb-2"><i class="fa-solid fa-lightbulb mr-1"></i> Tips for good sharing</p>
-          <ul class="text-xs text-blue-600 space-y-1 list-disc list-inside">
-            <li>Use clear titles like <em>"DB Systems — Oracle SQL Exam 2025"</em></li>
+        <div style="margin-top:16px;background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);padding:16px 18px;">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;"><i class="fa-solid fa-lightbulb" style="margin-right:6px;"></i>Tips for good sharing</div>
+          <ul style="font-size:12px;color:var(--muted);padding-left:16px;margin:0;line-height:1.8;">
+            <li>Use clear titles like <em style="color:var(--text);">"DB Systems — Oracle SQL Exam 2025"</em></li>
             <li>Add the course code so classmates can filter by module</li>
             <li>Files are stored on the server and available to everyone immediately</li>
           </ul>
         </div>
-
       </div>
     </div>
-
   </main>
 </div>
-
-<!-- ══════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════ -->
 <script>
+  /* ── SESSION GUARD ── */
+  const session = JSON.parse(sessionStorage.getItem('fpk_user') || 'null');
+  if (!session) { window.location.href = 'login.html'; }
+
+  if (session) {
+    const parts    = (session.display || 'ST').split(' ');
+    const initials = parts.map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-name').textContent   = session.display || session.username;
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting').textContent = greet + ', ' + (session.display||'').split(' ')[0] + ' \u{1F44B}';
+  }
+
+  function doLogout() { sessionStorage.removeItem('fpk_user'); window.location.href = 'login.html'; }
+
   const API = 'http://localhost:3000/api';
+  const ME  = {
+    author: session?.display || 'Student',
+    avatar: (session?.display||'ST').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()
+  };
 
-  /* ── COMMUNITY SEED DATA (peer files, always shown) ── */
   const COMMUNITY_FILES = [
-    { id:'c1', title:'Calculus II — Final Exam 2023',         category:'Exam',     course:'MATH 301', description:'Complete final with worked solutions.',            date:'2024-06-10', fileSize:'1.2 MB', ext:'pdf',  author:'Sara El Amrani', avatar:'SE', downloads:142, filePath:null },
-    { id:'c2', title:'Data Structures & Algorithms Notes',     category:'Notes',    course:'CS 202',   description:'Trees, graphs, sorting — full lecture notes.',     date:'2024-04-22', fileSize:'840 KB', ext:'docx', author:'Youssef Benali', avatar:'YB', downloads:98,  filePath:null },
-    { id:'c3', title:'Machine Learning Survey Paper',          category:'Research', course:'AI 501',   description:'Survey of deep learning architectures 2024.',      date:'2024-03-15', fileSize:'2.5 MB', ext:'pdf',  author:'Nadia Chakir',   avatar:'NC', downloads:77,  filePath:null },
-    { id:'c4', title:'Database Systems — Midterm Exam',        category:'Exam',     course:'DB 310',   description:'Midterm with SQL and schema design exercises.',    date:'2024-11-08', fileSize:'760 KB', ext:'pdf',  author:'Hamza Tazi',     avatar:'HT', downloads:63,  filePath:null },
-    { id:'c5', title:'Probability & Statistics Notes',         category:'Notes',    course:'STAT 201', description:'Lecture notes covering distributions, week 1–6.', date:'2024-09-30', fileSize:'1.1 MB', ext:'docx', author:'Rim Ouali',      avatar:'RO', downloads:55,  filePath:null },
-    { id:'c6', title:'Operating Systems — Process Scheduling', category:'Notes',    course:'OS 401',   description:'Detailed notes on CPU scheduling algorithms.',    date:'2025-01-14', fileSize:'930 KB', ext:'pdf',  author:'Karim Ezzouak',  avatar:'KE', downloads:44,  filePath:null },
-    { id:'c7', title:'Computer Networks — Lab Report 3',       category:'Other',    course:'NET 302',  description:'Wireshark analysis and TCP/IP lab writeup.',       date:'2025-02-05', fileSize:'1.4 MB', ext:'pdf',  author:'Sara El Amrani', avatar:'SE', downloads:31,  filePath:null },
-    { id:'c8', title:'NLP — Transformers & Attention Slides',  category:'Research', course:'AI 601',   description:'Slides on BERT, GPT, and attention mechanisms.',   date:'2025-03-01', fileSize:'3.2 MB', ext:'pdf',  author:'Nadia Chakir',   avatar:'NC', downloads:89,  filePath:null },
+    {id:'c1',title:'Calculus II \u2014 Final Exam 2023',        category:'Exam',    course:'MATH 301',description:'Complete final with worked solutions.',          date:'2024-06-10',fileSize:'1.2 MB',ext:'pdf', author:'Sara El Amrani',avatar:'SE',downloads:142,filePath:null},
+    {id:'c2',title:'Data Structures & Algorithms Notes',         category:'Notes',   course:'CS 202',  description:'Trees, graphs, sorting \u2014 full lecture notes.',date:'2024-04-22',fileSize:'840 KB',ext:'docx',author:'Youssef Benali',avatar:'YB',downloads:98, filePath:null},
+    {id:'c3',title:'Machine Learning Survey Paper',              category:'Research',course:'AI 501',  description:'Survey of deep learning architectures 2024.',    date:'2024-03-15',fileSize:'2.5 MB',ext:'pdf', author:'Nadia Chakir',  avatar:'NC',downloads:77, filePath:null},
+    {id:'c4',title:'Database Systems \u2014 Midterm Exam',       category:'Exam',    course:'DB 310',  description:'Midterm with SQL and schema design exercises.',  date:'2024-11-08',fileSize:'760 KB',ext:'pdf', author:'Hamza Tazi',    avatar:'HT',downloads:63, filePath:null},
+    {id:'c5',title:'Probability & Statistics Notes',             category:'Notes',   course:'STAT 201',description:'Lecture notes covering distributions, week 1\u20136.',date:'2024-09-30',fileSize:'1.1 MB',ext:'docx',author:'Rim Ouali',avatar:'RO',downloads:55,filePath:null},
+    {id:'c6',title:'Operating Systems \u2014 Process Scheduling',category:'Notes',   course:'OS 401',  description:'Detailed notes on CPU scheduling algorithms.',  date:'2025-01-14',fileSize:'930 KB',ext:'pdf', author:'Karim Ezzouak', avatar:'KE',downloads:44, filePath:null},
+    {id:'c7',title:'Computer Networks \u2014 Lab Report 3',      category:'Other',   course:'NET 302', description:'Wireshark analysis and TCP/IP lab writeup.',     date:'2025-02-05',fileSize:'1.4 MB',ext:'pdf', author:'Sara El Amrani',avatar:'SE',downloads:31, filePath:null},
+    {id:'c8',title:'NLP \u2014 Transformers & Attention Slides', category:'Research',course:'AI 601',  description:'Slides on BERT, GPT, and attention mechanisms.', date:'2025-03-01',fileSize:'3.2 MB',ext:'pdf', author:'Nadia Chakir',  avatar:'NC',downloads:89, filePath:null},
   ];
-
-  const ME = { author: 'Oussama Chabani', avatar: 'OC' };
   let myUploads = [];
 
-  /* ── HELPERS ── */
-  const EXT_ICON = {
-    pdf:  'fa-file-pdf text-red-400',
-    docx: 'fa-file-word text-blue-400',
-    doc:  'fa-file-word text-blue-400',
-    pptx: 'fa-file-powerpoint text-orange-400',
-    xlsx: 'fa-file-excel text-green-500',
-    png:  'fa-file-image text-purple-400',
-    jpg:  'fa-file-image text-purple-400',
-    jpeg: 'fa-file-image text-purple-400',
-    txt:  'fa-file-lines text-slate-400',
-    default: 'fa-file text-slate-400'
-  };
-  const AVATAR_COLORS = ['bg-blue-500','bg-violet-500','bg-rose-500','bg-amber-500','bg-emerald-500','bg-cyan-500','bg-pink-500','bg-indigo-500'];
-  function avatarColor(av)  { let n=0; for(const c of (av||'?')) n+=c.charCodeAt(0); return AVATAR_COLORS[n % AVATAR_COLORS.length]; }
-  function extIcon(ext)     { return EXT_ICON[ext?.toLowerCase()] || EXT_ICON.default; }
-  function badgeCls(cat)    { return 'badge-'+(cat||'other').toLowerCase(); }
-  function getAllFiles()     { return [...myUploads, ...COMMUNITY_FILES]; }
+  const EXT_ICON  = {pdf:'fa-file-pdf',docx:'fa-file-word',doc:'fa-file-word',pptx:'fa-file-powerpoint',xlsx:'fa-file-excel',png:'fa-file-image',jpg:'fa-file-image',jpeg:'fa-file-image',txt:'fa-file-lines',default:'fa-file'};
+  const EXT_COLOR = {pdf:'#e05c5c',docx:'#5b8ff9',doc:'#5b8ff9',pptx:'#f97316',xlsx:'#4dd4ac',png:'#b482f0',jpg:'#b482f0',jpeg:'#b482f0',txt:'#5a607a',default:'#5a607a'};
+  const AV_COLORS = ['#f0c040','#e05c5c','#4dd4ac','#5b8ff9','#b482f0','#f97316','#06b6d4','#a3e635'];
+  function avColor(s){let n=0;for(const c of (s||'?'))n+=c.charCodeAt(0);return AV_COLORS[n%AV_COLORS.length];}
+  function extIcon(e){return EXT_ICON[(e||'').toLowerCase()]||EXT_ICON.default;}
+  function extColor(e){return EXT_COLOR[(e||'').toLowerCase()]||EXT_COLOR.default;}
+  function badgeCss(cat){const m={Exam:'rgba(91,143,249,.15)|#5b8ff9',Notes:'rgba(77,212,172,.15)|#4dd4ac',Resume:'rgba(240,192,64,.15)|#f0c040',Research:'rgba(180,130,240,.15)|#b482f0',Other:'rgba(90,96,122,.2)|#5a607a'};const[bg,color]=(m[cat]||m.Other).split('|');return `background:${bg};color:${color}`;}
+  function badgeEl(cat){return `<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;font-family:var(--mono);padding:3px 8px;text-transform:uppercase;letter-spacing:.5px;${badgeCss(cat)}">${cat||'Other'}</span>`;}
+  function getAllFiles(){return [...myUploads,...COMMUNITY_FILES];}
 
-  /* ── FETCH FROM BACKEND ── */
-  async function fetchMyUploads() {
-    try {
-      const res  = await fetch(`${API}/files`);
-      if (!res.ok) throw new Error('Server error');
-      const data = await res.json();
-      myUploads  = data.map(f => ({ ...f, avatar: ME.avatar, _isMine: true }));
-    } catch {
-      showToast('error', 'Cannot reach the backend. Is the server running on port 3000?');
-      myUploads = [];
-    }
+  async function fetchMyUploads(){
+    try{const res=await fetch(`${API}/files`);if(!res.ok)throw new Error();const data=await res.json();myUploads=data.map(f=>({...f,avatar:ME.avatar,_isMine:true}));}
+    catch{showToast('error','Cannot reach the backend. Is the server running on port 3000?');myUploads=[];}
   }
 
-  /* ── VAULT FILTER STATE ── */
-  let vaultFilter = 'all';
-  function setVaultFilter(v) {
-    vaultFilter = v;
-    ['all','shared','mine'].forEach(p => {
-      document.getElementById('pill-'+p).className =
-        (p===v ? 'pill-active' : 'pill-inactive') + ' text-xs font-semibold px-4 py-1.5 rounded-full transition-all';
-    });
-    renderVault();
-  }
+  let vaultFilter='all';
+  function setVaultFilter(v){vaultFilter=v;['all','shared','mine'].forEach(p=>document.getElementById('pill-'+p).classList.toggle('active',p===v));renderVault();}
 
-  /* ── TAB SWITCHING ── */
-  function switchTab(t) {
-    ['home','vault','upload'].forEach(id => {
-      document.getElementById('tab-'+id).classList.remove('active');
-      document.getElementById('nav-'+id).classList.remove('active');
-    });
+  function switchTab(t){
+    document.querySelectorAll('.u-tab').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.u-nav').forEach(el=>el.classList.remove('active'));
     document.getElementById('tab-'+t).classList.add('active');
     document.getElementById('nav-'+t).classList.add('active');
-    if (t === 'vault') renderVault();
-    if (t === 'home')  renderHome();
+    if(t==='vault')renderVault();if(t==='home')renderHome();
   }
 
-  /* ── HOME ── */
-  function renderHome() {
-    const all          = getAllFiles();
-    const contributors = new Set(all.map(f => f.author)).size;
-
-    document.getElementById('stat-total').textContent        = all.length;
-    document.getElementById('stat-shared').textContent       = COMMUNITY_FILES.length;
-    document.getElementById('stat-mine').textContent         = myUploads.length;
-    document.getElementById('stat-contributors').textContent = contributors;
-    document.getElementById('vault-badge').textContent       = all.length;
-
-    /* Recently shared by peers */
-    document.getElementById('recent-shared').innerHTML = COMMUNITY_FILES.slice(0,4).map(f => `
-      <div class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50 transition-colors">
-        <div class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
-          <i class="fa-solid ${extIcon(f.ext)} text-sm"></i>
+  function renderHome(){
+    const all=getAllFiles();
+    document.getElementById('stat-total').textContent       =all.length;
+    document.getElementById('stat-shared').textContent      =COMMUNITY_FILES.length;
+    document.getElementById('stat-mine').textContent        =myUploads.length;
+    document.getElementById('stat-contributors').textContent=new Set(all.map(f=>f.author)).size;
+    document.getElementById('vault-badge').textContent      =all.length;
+    document.getElementById('recent-shared').innerHTML=COMMUNITY_FILES.slice(0,4).map(f=>`
+      <div class="u-row-hover" style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(37,42,56,.5);">
+        <div style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:14px;"></i></div>
+        <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.title}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;"><div style="width:16px;height:16px;background:${avColor(f.avatar)};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#0d0f14;font-family:var(--mono);">${f.avatar}</div><span style="font-size:11px;color:var(--muted);">${f.author} \u00b7 ${f.date}</span></div>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-slate-700 truncate">${f.title}</p>
-          <div class="flex items-center gap-2 mt-0.5">
-            <div class="w-4 h-4 rounded-full ${avatarColor(f.avatar)} flex items-center justify-center text-white text-[9px] font-bold">${f.avatar}</div>
-            <p class="text-xs text-slate-400">${f.author} · ${f.date}</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeCls(f.category)}">${f.category}</span>
-          <span class="text-xs text-slate-400"><i class="fa-solid fa-download mr-1 text-slate-300"></i>${f.downloads}</span>
-        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${badgeEl(f.category)}<span style="font-size:11px;color:var(--muted);font-family:var(--mono);"><i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${f.downloads}</span></div>
       </div>`).join('');
-
-    /* My recent uploads */
-    const mineEl  = document.getElementById('recent-mine');
-    const mineEmp = document.getElementById('mine-empty');
-    if (myUploads.length === 0) { mineEmp.classList.remove('hidden'); return; }
-    mineEmp.classList.add('hidden');
-    mineEl.innerHTML = myUploads.slice(0,3).map(f => `
-      <div class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50 transition-colors">
-        <div class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
-          <i class="fa-solid ${extIcon(f.ext)} text-sm"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-slate-700 truncate">${f.title}</p>
-          <p class="text-xs text-slate-400 mt-0.5">${f.course || 'General'} · ${f.date}</p>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeCls(f.category)}">${f.category}</span>
-          <span class="text-xs bg-emerald-50 text-emerald-600 font-semibold px-2 py-0.5 rounded-full">Shared</span>
-        </div>
+    document.getElementById('mine-empty').style.display=myUploads.length?'none':'block';
+    if(!myUploads.length)return;
+    document.getElementById('recent-mine').innerHTML=myUploads.slice(0,3).map(f=>`
+      <div class="u-row-hover" style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(37,42,56,.5);">
+        <div style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:14px;"></i></div>
+        <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.title}</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">${f.course||'General'} \u00b7 ${f.date}</div></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${badgeEl(f.category)}<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:2px 8px;letter-spacing:.5px;">SHARED</span></div>
       </div>`).join('');
   }
 
-  /* ── VAULT ── */
-  function renderVault() {
-    const q   = (document.getElementById('search-input')?.value || '').toLowerCase();
-    const cat = document.getElementById('filter-cat')?.value || '';
-
-    let source = vaultFilter === 'mine'   ? myUploads
-               : vaultFilter === 'shared' ? COMMUNITY_FILES
-               : getAllFiles();
-
-    let files = source.filter(f => {
-      const matchQ   = !q   || f.title.toLowerCase().includes(q)
-                             || (f.course||'').toLowerCase().includes(q)
-                             || (f.author||'').toLowerCase().includes(q);
-      const matchCat = !cat || f.category === cat;
-      return matchQ && matchCat;
-    });
-
-    const grid  = document.getElementById('vault-grid');
-    const empty = document.getElementById('vault-empty');
-    grid.innerHTML = '';
-
-    if (files.length === 0) {
-      empty.classList.remove('hidden');
-      grid.classList.add('hidden');
-      return;
-    }
-    empty.classList.add('hidden');
-    grid.classList.remove('hidden');
-
-    const myIds = new Set(myUploads.map(f => f.id));
-
-    files.forEach((f, i) => {
-      const isOwn = myIds.has(f.id);
-      const card  = document.createElement('div');
-      card.className = 'file-card bg-white border border-slate-200 rounded-2xl p-5 shadow-sm fade-in';
-      card.style.animationDelay = `${i * 35}ms`;
-      card.innerHTML = `
-        <div class="flex items-start justify-between mb-3">
-          <div class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">
-            <i class="fa-solid ${extIcon(f.ext)} text-lg"></i>
-          </div>
-          <div class="flex items-center gap-1.5 flex-wrap justify-end">
-            ${isOwn ? '<span class="text-xs bg-emerald-50 text-emerald-600 font-semibold px-2 py-0.5 rounded-full">Mine</span>' : ''}
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeCls(f.category)}">${f.category}</span>
-          </div>
+  function renderVault(){
+    const q=(document.getElementById('search-input')?.value||'').toLowerCase();
+    const cat=document.getElementById('filter-cat')?.value||'';
+    const src=vaultFilter==='mine'?myUploads:vaultFilter==='shared'?COMMUNITY_FILES:getAllFiles();
+    const files=src.filter(f=>(!q||f.title.toLowerCase().includes(q)||(f.course||'').toLowerCase().includes(q)||(f.author||'').toLowerCase().includes(q))&&(!cat||f.category===cat));
+    const grid=document.getElementById('vault-grid'),empty=document.getElementById('vault-empty');
+    grid.innerHTML='';
+    if(!files.length){empty.style.display='block';grid.style.display='none';return;}
+    empty.style.display='none';grid.style.display='grid';
+    const myIds=new Set(myUploads.map(f=>f.id));
+    files.forEach((f,i)=>{
+      const isOwn=myIds.has(f.id);const card=document.createElement('div');
+      card.className='u-file-card fade-up';card.style.animationDelay=`${i*35}ms`;
+      card.innerHTML=`
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+          <div style="width:44px;height:44px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:18px;"></i></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">${isOwn?`<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:3px 8px;letter-spacing:.5px;">MINE</span>`:''}${badgeEl(f.category)}</div>
         </div>
-        <h4 class="font-semibold text-slate-800 text-sm leading-snug mb-1 line-clamp-2">${f.title}</h4>
-        <p class="text-xs text-slate-400 mb-2">${f.course ? f.course + ' · ' : ''}${f.fileSize || 'N/A'}</p>
-        <p class="text-xs text-slate-500 line-clamp-2 mb-3">${f.description || ''}</p>
-        <div class="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
-          <div class="w-5 h-5 rounded-full ${avatarColor(f.avatar)} flex items-center justify-center text-white text-[9px] font-bold shrink-0">${f.avatar || '?'}</div>
-          <p class="text-xs text-slate-500 truncate">${f.author}</p>
-          <span class="ml-auto text-xs text-slate-400 dl-counter" data-id="${f.id}">
-            <i class="fa-solid fa-download mr-1 text-slate-300"></i>${f.downloads || 0}
-          </span>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${f.title}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);">${f.course?f.course+' \u00b7 ':''}${f.fileSize||'N/A'}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px;">${f.description||''}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <div style="width:22px;height:22px;background:${avColor(f.avatar)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d0f14;font-family:var(--mono);flex-shrink:0;">${f.avatar||'?'}</div>
+          <span style="font-size:12px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.author}</span>
+          <span class="dl-counter" data-id="${f.id}" style="font-size:11px;color:var(--muted);font-family:var(--mono);"><i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${f.downloads||0}</span>
         </div>
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${f.date}</span>
-          <div class="flex items-center gap-2">
-            <button onclick="handleDownload('${f.id}', '${f.filePath || ''}')" title="Download"
-              class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-colors text-xs">
-              <i class="fa-solid fa-download"></i>
-            </button>
-            ${isOwn ? `
-            <button onclick="confirmDelete('${f.id}')" title="Delete"
-              class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-400 flex items-center justify-center transition-colors text-xs">
-              <i class="fa-solid fa-trash"></i>
-            </button>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">${f.date}</span>
+          <div style="display:flex;gap:6px;">
+            <button onclick="handleDownload('${f.id}','${f.filePath||''}')" class="btn-icon" title="Download"><i class="fa-solid fa-download"></i></button>
+            ${isOwn?`<button onclick="confirmDelete('${f.id}')" class="btn-icon danger" title="Delete"><i class="fa-solid fa-trash"></i></button>`:''}
           </div>
         </div>`;
       grid.appendChild(card);
     });
   }
 
-  /* ── FILE SELECTED via picker ── */
-  function onFileSelected(event) {
-    const f = event.target.files[0];
-    if (!f) return;
-    document.getElementById('drop-name-text').textContent = f.name;
-    document.getElementById('drop-filename').classList.remove('hidden');
-    const base = f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');
-    if (!document.getElementById('upload-title').value) document.getElementById('upload-title').value = base;
+  function onFileSelected(e){const f=e.target.files[0];if(!f)return;document.getElementById('drop-name-text').textContent=f.name;document.getElementById('drop-filename').style.display='block';const base=f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');if(!document.getElementById('upload-title').value)document.getElementById('upload-title').value=base;}
+  function handleDrop(e){e.preventDefault();const dz=document.getElementById('drop-zone');dz.style.borderColor='var(--border)';dz.style.background='';const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);document.getElementById('upload-file').files=dt.files;document.getElementById('drop-name-text').textContent=f.name;document.getElementById('drop-filename').style.display='block';const base=f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');if(!document.getElementById('upload-title').value)document.getElementById('upload-title').value=base;showToast('info',`"${f.name}" detected \u2014 fill in the details and share!`);}
+
+  async function handleUpload(){
+    const title=document.getElementById('upload-title').value.trim();
+    const category=document.getElementById('upload-category').value;
+    const course=document.getElementById('upload-course').value.trim();
+    const desc=document.getElementById('upload-desc').value.trim();
+    const fileInput=document.getElementById('upload-file');
+    const file=fileInput?.files?.[0];
+    if(!title){showToast('error','Please enter a file title.');shakeFocus('upload-title');return;}
+    if(!category){showToast('error','Please select a category.');shakeFocus('upload-category');return;}
+    if(!file){showToast('error','Please attach a file first.');return;}
+    const btn=document.getElementById('upload-btn');
+    btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Uploading\u2026';
+    const form=new FormData();form.append('file',file);form.append('title',title);form.append('category',category);form.append('course',course||'General');form.append('description',desc);form.append('author',ME.author);
+    try{
+      const res=await fetch(`${API}/upload`,{method:'POST',body:form});const data=await res.json();
+      if(!res.ok)throw new Error(data.error||'Upload failed.');
+      showToast('success',`"${title}" shared to the Vault!`);
+      ['upload-title','upload-course','upload-desc'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('upload-category').value='';fileInput.value='';document.getElementById('drop-filename').style.display='none';
+      await fetchMyUploads();renderHome();setTimeout(()=>{setVaultFilter('all');switchTab('vault');},1200);
+    }catch(err){showToast('error',err.message);}
+    finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-share-nodes"></i> Share to Vault';}
   }
 
-  /* ── DRAG & DROP ── */
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('drop-zone').classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (!f) return;
-    const dt = new DataTransfer();
-    dt.items.add(f);
-    document.getElementById('upload-file').files = dt.files;
-    document.getElementById('drop-name-text').textContent = f.name;
-    document.getElementById('drop-filename').classList.remove('hidden');
-    const base = f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');
-    if (!document.getElementById('upload-title').value) document.getElementById('upload-title').value = base;
-    showToast('info', `"${f.name}" detected — fill in the details and share!`);
+  async function handleDownload(id,filePath){
+    if(!id.startsWith('c')){try{await fetch(`${API}/files/${id}/download`,{method:'PATCH'});}catch{}const counter=document.querySelector(`.dl-counter[data-id="${id}"]`);if(counter){const curr=parseInt(counter.textContent)||0;counter.innerHTML=`<i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${curr+1}`;}}
+    if(filePath&&filePath!=='null'&&filePath!==''){const a=document.createElement('a');a.href=`http://localhost:3000${filePath}`;a.download='';document.body.appendChild(a);a.click();document.body.removeChild(a);}
+    else{showToast('info','Downloading file\u2026');}
   }
 
-  /* ── UPLOAD → POST to real backend ── */
-  async function handleUpload() {
-    const title    = document.getElementById('upload-title').value.trim();
-    const category = document.getElementById('upload-category').value;
-    const course   = document.getElementById('upload-course').value.trim();
-    const desc     = document.getElementById('upload-desc').value.trim();
-    const fileInput= document.getElementById('upload-file');
-    const file     = fileInput?.files?.[0];
-
-    if (!title)    { showToast('error', 'Please enter a file title.');   shakeFocus('upload-title');    return; }
-    if (!category) { showToast('error', 'Please select a category.');    shakeFocus('upload-category'); return; }
-    if (!file)     { showToast('error', 'Please attach a file first.');  return; }
-
-    const btn = document.getElementById('upload-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading…';
-
-    const form = new FormData();
-    form.append('file',        file);
-    form.append('title',       title);
-    form.append('category',    category);
-    form.append('course',      course || 'General');
-    form.append('description', desc);
-    form.append('author',      ME.author);
-
-    try {
-      const res  = await fetch(`${API}/upload`, { method: 'POST', body: form });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed.');
-
-      showToast('success', `"${title}" shared to the Vault!`);
-
-      /* Reset form */
-      ['upload-title','upload-course','upload-desc'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('upload-category').value = '';
-      fileInput.value = '';
-      document.getElementById('drop-filename').classList.add('hidden');
-
-      await fetchMyUploads();
-      renderHome();
-      setTimeout(() => { setVaultFilter('all'); switchTab('vault'); }, 1200);
-
-    } catch (err) {
-      showToast('error', err.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-share-nodes"></i> Share to Vault';
-    }
+  async function confirmDelete(id){
+    const f=myUploads.find(x=>x.id===id);if(!f||!confirm(`Remove "${f.title}" from the vault? This cannot be undone.`))return;
+    try{const res=await fetch(`${API}/files/${id}`,{method:'DELETE'});if(!res.ok)throw new Error('Delete failed.');showToast('info',`"${f.title}" removed from the Vault.`);await fetchMyUploads();renderVault();renderHome();}
+    catch(err){showToast('error',err.message);}
   }
 
-  /* ── DOWNLOAD ── */
-  async function handleDownload(id, filePath) {
-    /* Increment counter on backend for real uploaded files */
-    if (!id.startsWith('c')) {
-      try { await fetch(`${API}/files/${id}/download`, { method: 'PATCH' }); } catch {}
-      /* Update counter in UI */
-      const counter = document.querySelector(`.dl-counter[data-id="${id}"]`);
-      if (counter) {
-        const curr = parseInt(counter.textContent) || 0;
-        counter.innerHTML = `<i class="fa-solid fa-download mr-1 text-slate-300"></i>${curr + 1}`;
-      }
-    }
-
-    if (filePath && filePath !== 'null' && filePath !== '') {
-      const a = document.createElement('a');
-      a.href     = `http://localhost:3000${filePath}`;
-      a.download = '';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else {
-      showToast('success', 'Downloading file…');
-    }
-  }
-
-  /* ── DELETE ── */
-  async function confirmDelete(id) {
-    const f = myUploads.find(x => x.id === id);
-    if (!f) return;
-    if (!confirm(`Remove "${f.title}" from the shared vault? This cannot be undone.`)) return;
-    try {
-      const res = await fetch(`${API}/files/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Delete failed.');
-      showToast('info', `"${f.title}" removed from the Vault.`);
-      await fetchMyUploads();
-      renderVault();
-      renderHome();
-    } catch (err) {
-      showToast('error', err.message);
-    }
-  }
-
-  /* ── TOAST ── */
   let toastTimer;
-  function showToast(type, msg) {
-    const t   = document.getElementById('toast');
-    const ico = document.getElementById('toast-icon');
-    const cfg = {
-      success: { bg:'bg-emerald-100', color:'text-emerald-600', icon:'fa-check'  },
-      error:   { bg:'bg-red-100',     color:'text-red-500',     icon:'fa-xmark'  },
-      info:    { bg:'bg-blue-100',    color:'text-blue-600',    icon:'fa-info'   },
-    }[type];
-    ico.className = `w-8 h-8 rounded-full flex items-center justify-center text-sm ${cfg.bg} ${cfg.color}`;
-    ico.innerHTML = `<i class="fa-solid ${cfg.icon}"></i>`;
-    document.getElementById('toast-msg').textContent = msg;
-    t.style.opacity   = '1';
-    t.style.transform = 'translateY(0)';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      t.style.opacity   = '0';
-      t.style.transform = 'translateY(-8px)';
-    }, 3500);
+  function showToast(type,msg){
+    const t=document.getElementById('toast'),ico=document.getElementById('toast-icon');
+    const cfg={success:{icon:'fa-check',bg:'rgba(77,212,172,.15)',color:'#4dd4ac'},error:{icon:'fa-xmark',bg:'rgba(224,92,92,.15)',color:'#e05c5c'},info:{icon:'fa-info',bg:'rgba(240,192,64,.15)',color:'#f0c040'}}[type];
+    ico.style.background=cfg.bg;ico.style.color=cfg.color;ico.innerHTML=`<i class="fa-solid ${cfg.icon}"></i>`;
+    document.getElementById('toast-msg').textContent=msg;
+    t.style.opacity='1';t.style.transform='translateY(0)';clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(-8px)';},3500);
   }
+  function shakeFocus(id){const el=document.getElementById(id);el.focus();el.style.borderColor='var(--accent2)';setTimeout(()=>el.style.borderColor='',1500);}
 
-  /* ── SHAKE FOCUS ── */
-  function shakeFocus(id) {
-    const el = document.getElementById(id);
-    el.focus();
-    el.style.borderColor = '#f87171';
-    setTimeout(() => el.style.borderColor = '', 1500);
-  }
-
-  /* ── INIT ── */
-  document.addEventListener('DOMContentLoaded', async () => {
-    await fetchMyUploads();
-    renderHome();
-  });
+  document.addEventListener('DOMContentLoaded',async()=>{await fetchMyUploads();renderHome();});
 </script>
 </body>
 </html>
