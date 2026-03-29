@@ -97,13 +97,13 @@
         </div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
           <div class="u-stat-card" style="--bar:var(--accent);"><div class="u-stat-label">Total Files</div><div class="u-stat-val" id="stat-total">0</div><div class="u-stat-sub">in the archive</div></div>
-          <div class="u-stat-card" style="--bar:#5b8ff9;"><div class="u-stat-label">Shared by Peers</div><div class="u-stat-val" id="stat-shared">0</div><div class="u-stat-sub">community files</div></div>
-          <div class="u-stat-card" style="--bar:var(--accent3);"><div class="u-stat-label">My Uploads</div><div class="u-stat-val" id="stat-mine">0</div><div class="u-stat-sub">contributed by you</div></div>
+          <div class="u-stat-card" style="--bar:#5b8ff9;"><div class="u-stat-label">My Uploads</div><div class="u-stat-val" id="stat-mine">0</div><div class="u-stat-sub">contributed by you</div></div>
+          <div class="u-stat-card" style="--bar:var(--accent3);"><div class="u-stat-label">Total Downloads</div><div class="u-stat-val" id="stat-downloads">0</div><div class="u-stat-sub">across all files</div></div>
           <div class="u-stat-card" style="--bar:var(--accent2);"><div class="u-stat-label">Contributors</div><div class="u-stat-val" id="stat-contributors">0</div><div class="u-stat-sub">active students</div></div>
         </div>
         <div class="u-section" style="margin-bottom:20px;">
           <div class="u-section-head">
-            <div class="u-section-title"><i class="fa-solid fa-users" style="color:var(--accent);margin-right:8px;"></i>Recently Shared by Peers</div>
+            <div class="u-section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent);margin-right:8px;"></i>Recent Files from the Archive</div>
             <button onclick="switchTab('vault')" class="u-link">View all →</button>
           </div>
           <div id="recent-shared"></div>
@@ -143,9 +143,8 @@
           </div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:20px;">
-          <button onclick="setVaultFilter('all')"    id="pill-all"    class="u-pill active">All Files</button>
-          <button onclick="setVaultFilter('shared')" id="pill-shared" class="u-pill">Shared by Peers</button>
-          <button onclick="setVaultFilter('mine')"   id="pill-mine"   class="u-pill">My Uploads</button>
+          <button onclick="setVaultFilter('all')"  id="pill-all"  class="u-pill active">All Files</button>
+          <button onclick="setVaultFilter('mine')" id="pill-mine" class="u-pill">My Uploads</button>
         </div>
         <div id="vault-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
         <div id="vault-empty" style="display:none;padding:60px;text-align:center;color:var(--muted);">
@@ -186,7 +185,7 @@
             <div><label class="u-label">Attach File <span style="color:var(--accent2);">*</span></label><input type="file" id="upload-file" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.pptx,.xlsx,.txt" onchange="onFileSelected(event)" class="u-file-input" /></div>
             <div><label class="u-label">File Title <span style="color:var(--accent2);">*</span></label><input type="text" id="upload-title" placeholder="e.g. Linear Algebra Midterm 2025" class="u-input" style="width:100%;" /></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div><label class="u-label">Category <span style="color:var(--accent2);">*</span></label><select id="upload-category" class="u-select" style="width:100%;"><option value="">— Select —</option><option value="Exam">Exam</option><option value="Notes">Notes</option><option value="Resume">Resume</option><option value="Research">Research</option><option value="Other">Other</option></select></div>
+              <div><label class="u-label">Category <span style="color:var(--accent2);">*</span></label><select id="upload-category" class="u-select" style="width:100%;"><option value="">--- Select ---</option><option value="Exam">Exam</option><option value="Notes">Notes</option><option value="Resume">Resume</option><option value="Research">Research</option><option value="Other">Other</option></select></div>
               <div><label class="u-label">Course / Module</label><input type="text" id="upload-course" placeholder="e.g. CS 301" class="u-input" style="width:100%;" /></div>
             </div>
             <div><label class="u-label">Description</label><textarea id="upload-desc" rows="3" placeholder="Brief description so peers know what's inside…" class="u-textarea"></textarea></div>
@@ -196,52 +195,35 @@
             </div>
           </div>
         </div>
-        <div style="margin-top:16px;background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);padding:16px 18px;">
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;"><i class="fa-solid fa-lightbulb" style="margin-right:6px;"></i>Tips for good sharing</div>
-          <ul style="font-size:12px;color:var(--muted);padding-left:16px;margin:0;line-height:1.8;">
-            <li>Use clear titles like <em style="color:var(--text);">"DB Systems — Oracle SQL Exam 2025"</em></li>
-            <li>Add the course code so classmates can filter by module</li>
-            <li>Files are stored on the server and available to everyone immediately</li>
-          </ul>
-        </div>
       </div>
     </div>
   </main>
 </div>
 <script>
-  /* ── SESSION GUARD ── */
+  /* SESSION GUARD */
   const session = JSON.parse(sessionStorage.getItem('fpk_user') || 'null');
   if (!session) { window.location.href = 'login.html'; }
 
   if (session) {
     const parts    = (session.display || 'ST').split(' ');
-    const initials = parts.map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const initials = parts.map(w => w[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('user-avatar').textContent = initials;
     document.getElementById('user-name').textContent   = session.display || session.username;
-    const hour = new Date().getHours();
+    const hour  = new Date().getHours();
     const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('greeting').textContent = greet + ', ' + (session.display||'').split(' ')[0] + ' \u{1F44B}';
+    document.getElementById('greeting').textContent = greet + ', ' + (session.display||'').split(' ')[0] + ' \uD83D\uDC4B';
   }
 
   function doLogout() { sessionStorage.removeItem('fpk_user'); window.location.href = 'login.html'; }
 
   const API = 'http://localhost:3000/api';
   const ME  = {
+    id:     session?.id,
     author: session?.display || 'Student',
     avatar: (session?.display||'ST').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()
   };
 
-  const COMMUNITY_FILES = [
-    {id:'c1',title:'Calculus II \u2014 Final Exam 2023',        category:'Exam',    course:'MATH 301',description:'Complete final with worked solutions.',          date:'2024-06-10',fileSize:'1.2 MB',ext:'pdf', author:'Sara El Amrani',avatar:'SE',downloads:142,filePath:null},
-    {id:'c2',title:'Data Structures & Algorithms Notes',         category:'Notes',   course:'CS 202',  description:'Trees, graphs, sorting \u2014 full lecture notes.',date:'2024-04-22',fileSize:'840 KB',ext:'docx',author:'Youssef Benali',avatar:'YB',downloads:98, filePath:null},
-    {id:'c3',title:'Machine Learning Survey Paper',              category:'Research',course:'AI 501',  description:'Survey of deep learning architectures 2024.',    date:'2024-03-15',fileSize:'2.5 MB',ext:'pdf', author:'Nadia Chakir',  avatar:'NC',downloads:77, filePath:null},
-    {id:'c4',title:'Database Systems \u2014 Midterm Exam',       category:'Exam',    course:'DB 310',  description:'Midterm with SQL and schema design exercises.',  date:'2024-11-08',fileSize:'760 KB',ext:'pdf', author:'Hamza Tazi',    avatar:'HT',downloads:63, filePath:null},
-    {id:'c5',title:'Probability & Statistics Notes',             category:'Notes',   course:'STAT 201',description:'Lecture notes covering distributions, week 1\u20136.',date:'2024-09-30',fileSize:'1.1 MB',ext:'docx',author:'Rim Ouali',avatar:'RO',downloads:55,filePath:null},
-    {id:'c6',title:'Operating Systems \u2014 Process Scheduling',category:'Notes',   course:'OS 401',  description:'Detailed notes on CPU scheduling algorithms.',  date:'2025-01-14',fileSize:'930 KB',ext:'pdf', author:'Karim Ezzouak', avatar:'KE',downloads:44, filePath:null},
-    {id:'c7',title:'Computer Networks \u2014 Lab Report 3',      category:'Other',   course:'NET 302', description:'Wireshark analysis and TCP/IP lab writeup.',     date:'2025-02-05',fileSize:'1.4 MB',ext:'pdf', author:'Sara El Amrani',avatar:'SE',downloads:31, filePath:null},
-    {id:'c8',title:'NLP \u2014 Transformers & Attention Slides', category:'Research',course:'AI 601',  description:'Slides on BERT, GPT, and attention mechanisms.', date:'2025-03-01',fileSize:'3.2 MB',ext:'pdf', author:'Nadia Chakir',  avatar:'NC',downloads:89, filePath:null},
-  ];
-  let myUploads = [];
+  let allFiles = [];
 
   const EXT_ICON  = {pdf:'fa-file-pdf',docx:'fa-file-word',doc:'fa-file-word',pptx:'fa-file-powerpoint',xlsx:'fa-file-excel',png:'fa-file-image',jpg:'fa-file-image',jpeg:'fa-file-image',txt:'fa-file-lines',default:'fa-file'};
   const EXT_COLOR = {pdf:'#e05c5c',docx:'#5b8ff9',doc:'#5b8ff9',pptx:'#f97316',xlsx:'#4dd4ac',png:'#b482f0',jpg:'#b482f0',jpeg:'#b482f0',txt:'#5a607a',default:'#5a607a'};
@@ -251,72 +233,88 @@
   function extColor(e){return EXT_COLOR[(e||'').toLowerCase()]||EXT_COLOR.default;}
   function badgeCss(cat){const m={Exam:'rgba(91,143,249,.15)|#5b8ff9',Notes:'rgba(77,212,172,.15)|#4dd4ac',Resume:'rgba(240,192,64,.15)|#f0c040',Research:'rgba(180,130,240,.15)|#b482f0',Other:'rgba(90,96,122,.2)|#5a607a'};const[bg,color]=(m[cat]||m.Other).split('|');return `background:${bg};color:${color}`;}
   function badgeEl(cat){return `<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;font-family:var(--mono);padding:3px 8px;text-transform:uppercase;letter-spacing:.5px;${badgeCss(cat)}">${cat||'Other'}</span>`;}
-  function getAllFiles(){return [...myUploads,...COMMUNITY_FILES];}
 
-  async function fetchMyUploads(){
-    try{const res=await fetch(`${API}/files`);if(!res.ok)throw new Error();const data=await res.json();myUploads=data.map(f=>({...f,avatar:ME.avatar,_isMine:true}));}
-    catch{showToast('error','Cannot reach the backend. Is the server running on port 3000?');myUploads=[];}
+  async function fetchFiles() {
+    try {
+      const res = await fetch(`${API}/files`);
+      if (!res.ok) throw new Error();
+      allFiles = await res.json();
+    } catch {
+      showToast('error','Cannot reach the backend. Is the server running on port 3000?');
+      allFiles = [];
+    }
   }
 
-  let vaultFilter='all';
-  function setVaultFilter(v){vaultFilter=v;['all','shared','mine'].forEach(p=>document.getElementById('pill-'+p).classList.toggle('active',p===v));renderVault();}
+  let vaultFilter = 'all';
+  function setVaultFilter(v){
+    vaultFilter = v;
+    ['all','mine'].forEach(p => document.getElementById('pill-'+p).classList.toggle('active', p===v));
+    renderVault();
+  }
 
   function switchTab(t){
     document.querySelectorAll('.u-tab').forEach(el=>el.classList.remove('active'));
     document.querySelectorAll('.u-nav').forEach(el=>el.classList.remove('active'));
     document.getElementById('tab-'+t).classList.add('active');
     document.getElementById('nav-'+t).classList.add('active');
-    if(t==='vault')renderVault();if(t==='home')renderHome();
+    if(t==='vault') renderVault();
+    if(t==='home')  renderHome();
   }
 
   function renderHome(){
-    const all=getAllFiles();
-    document.getElementById('stat-total').textContent       =all.length;
-    document.getElementById('stat-shared').textContent      =COMMUNITY_FILES.length;
-    document.getElementById('stat-mine').textContent        =myUploads.length;
-    document.getElementById('stat-contributors').textContent=new Set(all.map(f=>f.author)).size;
-    document.getElementById('vault-badge').textContent      =all.length;
-    document.getElementById('recent-shared').innerHTML=COMMUNITY_FILES.slice(0,4).map(f=>`
+    const myFiles = allFiles.filter(f => f.author === ME.author);
+    const totalDL = allFiles.reduce((s,f) => s+(f.downloads||0), 0);
+    document.getElementById('stat-total').textContent        = allFiles.length;
+    document.getElementById('stat-mine').textContent         = myFiles.length;
+    document.getElementById('stat-downloads').textContent    = totalDL;
+    document.getElementById('stat-contributors').textContent = new Set(allFiles.map(f=>f.author)).size;
+    document.getElementById('vault-badge').textContent       = allFiles.length;
+
+    document.getElementById('recent-shared').innerHTML = allFiles.slice(0,4).map(f=>`
       <div class="u-row-hover" style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(37,42,56,.5);">
         <div style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:14px;"></i></div>
         <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.title}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;"><div style="width:16px;height:16px;background:${avColor(f.avatar)};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#0d0f14;font-family:var(--mono);">${f.avatar}</div><span style="font-size:11px;color:var(--muted);">${f.author} \u00b7 ${f.date}</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;"><div style="width:16px;height:16px;background:${avColor(f.author)};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#0d0f14;font-family:var(--mono);">${(f.author||'?')[0].toUpperCase()}</div><span style="font-size:11px;color:var(--muted);">${f.author} &middot; ${f.date}</span></div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${badgeEl(f.category)}<span style="font-size:11px;color:var(--muted);font-family:var(--mono);"><i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${f.downloads}</span></div>
-      </div>`).join('');
-    document.getElementById('mine-empty').style.display=myUploads.length?'none':'block';
-    if(!myUploads.length)return;
-    document.getElementById('recent-mine').innerHTML=myUploads.slice(0,3).map(f=>`
-      <div class="u-row-hover" style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(37,42,56,.5);">
-        <div style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:14px;"></i></div>
-        <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.title}</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">${f.course||'General'} \u00b7 ${f.date}</div></div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${badgeEl(f.category)}<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:2px 8px;letter-spacing:.5px;">SHARED</span></div>
-      </div>`).join('');
+      </div>`).join('') || '<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;"><i class="fa-solid fa-inbox" style="font-size:20px;display:block;margin-bottom:8px;opacity:.2;"></i>No files yet. Be the first to share!</div>';
+
+    document.getElementById('mine-empty').style.display = myFiles.length ? 'none' : 'block';
+    if (myFiles.length) {
+      document.getElementById('recent-mine').innerHTML = myFiles.slice(0,3).map(f=>`
+        <div class="u-row-hover" style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(37,42,56,.5);">
+          <div style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:14px;"></i></div>
+          <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.title}</div><div style="font-size:11px;color:var(--muted);margin-top:3px;">${f.course||'General'} &middot; ${f.date}</div></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${badgeEl(f.category)}<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:2px 8px;letter-spacing:.5px;">MINE</span></div>
+        </div>`).join('');
+    }
   }
 
   function renderVault(){
-    const q=(document.getElementById('search-input')?.value||'').toLowerCase();
-    const cat=document.getElementById('filter-cat')?.value||'';
-    const src=vaultFilter==='mine'?myUploads:vaultFilter==='shared'?COMMUNITY_FILES:getAllFiles();
-    const files=src.filter(f=>(!q||f.title.toLowerCase().includes(q)||(f.course||'').toLowerCase().includes(q)||(f.author||'').toLowerCase().includes(q))&&(!cat||f.category===cat));
-    const grid=document.getElementById('vault-grid'),empty=document.getElementById('vault-empty');
-    grid.innerHTML='';
-    if(!files.length){empty.style.display='block';grid.style.display='none';return;}
-    empty.style.display='none';grid.style.display='grid';
-    const myIds=new Set(myUploads.map(f=>f.id));
-    files.forEach((f,i)=>{
-      const isOwn=myIds.has(f.id);const card=document.createElement('div');
-      card.className='u-file-card fade-up';card.style.animationDelay=`${i*35}ms`;
-      card.innerHTML=`
+    const q   = (document.getElementById('search-input')?.value||'').toLowerCase();
+    const cat = document.getElementById('filter-cat')?.value||'';
+    const src = vaultFilter === 'mine' ? allFiles.filter(f => f.author === ME.author) : allFiles;
+    const files = src.filter(f =>(!q||f.title.toLowerCase().includes(q)||(f.course||'').toLowerCase().includes(q)||(f.author||'').toLowerCase().includes(q))&&(!cat||f.category===cat));
+    const grid  = document.getElementById('vault-grid');
+    const empty = document.getElementById('vault-empty');
+    grid.innerHTML = '';
+    if (!files.length) { empty.style.display='block'; grid.style.display='none'; return; }
+    empty.style.display = 'none'; grid.style.display = 'grid';
+    files.forEach((f,i) => {
+      const isOwn = f.author === ME.author;
+      const card  = document.createElement('div');
+      card.className = 'u-file-card fade-up';
+      card.style.animationDelay = `${i*35}ms`;
+      card.innerHTML = `
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
           <div style="width:44px;height:44px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;"><i class="fa-solid ${extIcon(f.ext)}" style="color:${extColor(f.ext)};font-size:18px;"></i></div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">${isOwn?`<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:3px 8px;letter-spacing:.5px;">MINE</span>`:''}${badgeEl(f.category)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">${isOwn?'<span style="font-size:10px;font-family:var(--mono);color:var(--accent3);background:rgba(77,212,172,.1);padding:3px 8px;letter-spacing:.5px;">MINE</span>':''}${badgeEl(f.category)}</div>
         </div>
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${f.title}</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);">${f.course?f.course+' \u00b7 ':''}${f.fileSize||'N/A'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);">${f.course?f.course+' &middot; ':''}${f.fileSize||'N/A'}</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px;">${f.description||''}</div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-          <div style="width:22px;height:22px;background:${avColor(f.avatar)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d0f14;font-family:var(--mono);flex-shrink:0;">${f.avatar||'?'}</div>
+          <div style="width:22px;height:22px;background:${avColor(f.author)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d0f14;font-family:var(--mono);flex-shrink:0;">${(f.author||'?')[0].toUpperCase()}</div>
           <span style="font-size:12px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.author}</span>
           <span class="dl-counter" data-id="${f.id}" style="font-size:11px;color:var(--muted);font-family:var(--mono);"><i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${f.downloads||0}</span>
         </div>
@@ -332,56 +330,66 @@
   }
 
   function onFileSelected(e){const f=e.target.files[0];if(!f)return;document.getElementById('drop-name-text').textContent=f.name;document.getElementById('drop-filename').style.display='block';const base=f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');if(!document.getElementById('upload-title').value)document.getElementById('upload-title').value=base;}
-  function handleDrop(e){e.preventDefault();const dz=document.getElementById('drop-zone');dz.style.borderColor='var(--border)';dz.style.background='';const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);document.getElementById('upload-file').files=dt.files;document.getElementById('drop-name-text').textContent=f.name;document.getElementById('drop-filename').style.display='block';const base=f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');if(!document.getElementById('upload-title').value)document.getElementById('upload-title').value=base;showToast('info',`"${f.name}" detected \u2014 fill in the details and share!`);}
+  function handleDrop(e){e.preventDefault();const dz=document.getElementById('drop-zone');dz.style.borderColor='var(--border)';dz.style.background='';const f=e.dataTransfer.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);document.getElementById('upload-file').files=dt.files;document.getElementById('drop-name-text').textContent=f.name;document.getElementById('drop-filename').style.display='block';const base=f.name.split('.').slice(0,-1).join('.').replace(/[-_]/g,' ');if(!document.getElementById('upload-title').value)document.getElementById('upload-title').value=base;showToast('info',`"${f.name}" detected — fill in the details and share!`);}
 
   async function handleUpload(){
-    const title=document.getElementById('upload-title').value.trim();
-    const category=document.getElementById('upload-category').value;
-    const course=document.getElementById('upload-course').value.trim();
-    const desc=document.getElementById('upload-desc').value.trim();
-    const fileInput=document.getElementById('upload-file');
-    const file=fileInput?.files?.[0];
-    if(!title){showToast('error','Please enter a file title.');shakeFocus('upload-title');return;}
-    if(!category){showToast('error','Please select a category.');shakeFocus('upload-category');return;}
-    if(!file){showToast('error','Please attach a file first.');return;}
-    const btn=document.getElementById('upload-btn');
-    btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Uploading\u2026';
-    const form=new FormData();form.append('file',file);form.append('title',title);form.append('category',category);form.append('course',course||'General');form.append('description',desc);form.append('author',ME.author);
-    try{
-      const res=await fetch(`${API}/upload`,{method:'POST',body:form});const data=await res.json();
-      if(!res.ok)throw new Error(data.error||'Upload failed.');
+    const title    = document.getElementById('upload-title').value.trim();
+    const category = document.getElementById('upload-category').value;
+    const course   = document.getElementById('upload-course').value.trim();
+    const desc     = document.getElementById('upload-desc').value.trim();
+    const fileInput= document.getElementById('upload-file');
+    const file     = fileInput?.files?.[0];
+    if(!title)    { showToast('error','Please enter a file title.');    return; }
+    if(!category) { showToast('error','Please select a category.');     return; }
+    if(!file)     { showToast('error','Please attach a file first.');   return; }
+    const btn = document.getElementById('upload-btn');
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading…';
+    const form = new FormData();
+    form.append('file',file); form.append('title',title); form.append('category',category);
+    form.append('course',course||'General'); form.append('description',desc); form.append('author',ME.author);
+    try {
+      const res  = await fetch(`${API}/upload`, { method:'POST', body:form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error||'Upload failed.');
       showToast('success',`"${title}" shared to the Vault!`);
       ['upload-title','upload-course','upload-desc'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('upload-category').value='';fileInput.value='';document.getElementById('drop-filename').style.display='none';
-      await fetchMyUploads();renderHome();setTimeout(()=>{setVaultFilter('all');switchTab('vault');},1200);
-    }catch(err){showToast('error',err.message);}
-    finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-share-nodes"></i> Share to Vault';}
+      document.getElementById('upload-category').value=''; fileInput.value=''; document.getElementById('drop-filename').style.display='none';
+      await fetchFiles(); renderHome(); setTimeout(()=>{setVaultFilter('all');switchTab('vault');},1200);
+    } catch(err) { showToast('error',err.message); }
+    finally { btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-share-nodes"></i> Share to Vault'; }
   }
 
-  async function handleDownload(id,filePath){
-    if(!id.startsWith('c')){try{await fetch(`${API}/files/${id}/download`,{method:'PATCH'});}catch{}const counter=document.querySelector(`.dl-counter[data-id="${id}"]`);if(counter){const curr=parseInt(counter.textContent)||0;counter.innerHTML=`<i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${curr+1}`;}}
-    if(filePath&&filePath!=='null'&&filePath!==''){const a=document.createElement('a');a.href=`http://localhost:3000${filePath}`;a.download='';document.body.appendChild(a);a.click();document.body.removeChild(a);}
-    else{showToast('info','Downloading file\u2026');}
+  async function handleDownload(id, filePath){
+    try { await fetch(`${API}/files/${id}/download`,{method:'PATCH'}); } catch {}
+    const counter = document.querySelector(`.dl-counter[data-id="${id}"]`);
+    if (counter) { const curr=parseInt(counter.textContent)||0; counter.innerHTML=`<i class="fa-solid fa-download" style="margin-right:4px;opacity:.4;"></i>${curr+1}`; }
+    if (filePath && filePath !== 'null' && filePath !== '') {
+      const a = document.createElement('a'); a.href=`http://localhost:3000${filePath}`; a.download=''; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } else { showToast('info','Downloading file…'); }
   }
 
   async function confirmDelete(id){
-    const f=myUploads.find(x=>x.id===id);if(!f||!confirm(`Remove "${f.title}" from the vault? This cannot be undone.`))return;
-    try{const res=await fetch(`${API}/files/${id}`,{method:'DELETE'});if(!res.ok)throw new Error('Delete failed.');showToast('info',`"${f.title}" removed from the Vault.`);await fetchMyUploads();renderVault();renderHome();}
-    catch(err){showToast('error',err.message);}
+    const f = allFiles.find(x=>x.id===id);
+    if (!f || !confirm(`Remove "${f.title}" from the vault? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API}/files/${id}`,{method:'DELETE'});
+      if (!res.ok) throw new Error('Delete failed.');
+      showToast('info',`"${f.title}" removed from the Vault.`);
+      await fetchFiles(); renderVault(); renderHome();
+    } catch(err) { showToast('error',err.message); }
   }
 
   let toastTimer;
   function showToast(type,msg){
     const t=document.getElementById('toast'),ico=document.getElementById('toast-icon');
     const cfg={success:{icon:'fa-check',bg:'rgba(77,212,172,.15)',color:'#4dd4ac'},error:{icon:'fa-xmark',bg:'rgba(224,92,92,.15)',color:'#e05c5c'},info:{icon:'fa-info',bg:'rgba(240,192,64,.15)',color:'#f0c040'}}[type];
-    ico.style.background=cfg.bg;ico.style.color=cfg.color;ico.innerHTML=`<i class="fa-solid ${cfg.icon}"></i>`;
+    ico.style.background=cfg.bg; ico.style.color=cfg.color; ico.innerHTML=`<i class="fa-solid ${cfg.icon}"></i>`;
     document.getElementById('toast-msg').textContent=msg;
-    t.style.opacity='1';t.style.transform='translateY(0)';clearTimeout(toastTimer);
+    t.style.opacity='1'; t.style.transform='translateY(0)'; clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(-8px)';},3500);
   }
-  function shakeFocus(id){const el=document.getElementById(id);el.focus();el.style.borderColor='var(--accent2)';setTimeout(()=>el.style.borderColor='',1500);}
 
-  document.addEventListener('DOMContentLoaded',async()=>{await fetchMyUploads();renderHome();});
+  document.addEventListener('DOMContentLoaded', async () => { await fetchFiles(); renderHome(); });
 </script>
 </body>
 </html>

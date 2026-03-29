@@ -15,7 +15,7 @@ const USERS_PATH   = path.join(__dirname, 'users.json');
 /* ──────────────────────────────────────────
    MIDDLEWARE
 ────────────────────────────────────────── */
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use('/uploads', express.static(UPLOADS_PATH));
 
@@ -31,6 +31,19 @@ function formatSize(bytes) {
   if (bytes < 1024)        return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/* ──────────────────────────────────────────
+   ADMIN TOKEN GUARD (simple header-based)
+   Pass header:  x-admin-token: fpk-admin-2026
+   Used by admin.html when calling /api/auth/users
+────────────────────────────────────────── */
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'fpk-admin-2026';
+function requireAdmin(req, res, next) {
+  const token = req.headers['x-admin-token'];
+  if (token !== ADMIN_TOKEN)
+    return res.status(403).json({ error: 'Forbidden. Admin token required.' });
+  next();
 }
 
 /* ──────────────────────────────────────────
@@ -62,6 +75,11 @@ app.post('/api/auth/register', async (req, res) => {
     const { username, password, role, display } = req.body;
     if (!username || !password)
       return res.status(400).json({ error: 'Username and password are required.' });
+
+    /* Password strength: min 6 chars, at least one letter and one number */
+    const strongPwd = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    if (!strongPwd.test(password))
+      return res.status(400).json({ error: 'Password must be at least 6 characters and include a letter and a number.' });
 
     const users = readUsers();
     if (users.find(u => u.username === username.trim().toLowerCase()))
@@ -113,8 +131,8 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-/* LIST USERS — GET /api/auth/users */
-app.get('/api/auth/users', (req, res) => {
+/* LIST USERS — GET /api/auth/users  [admin only] */
+app.get('/api/auth/users', requireAdmin, (req, res) => {
   const users = readUsers().map(u => ({
     id: u.id, username: u.username, role: u.role, display: u.display, createdAt: u.createdAt,
   }));
@@ -131,7 +149,16 @@ app.get('/api/files', (req, res) => {
 });
 
 /* UPLOAD FILE — POST /api/upload */
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', (req, res, next) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE')
+        return res.status(413).json({ error: 'File too large. Maximum allowed size is 20 MB.' });
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+}, (req, res) => {
   try {
     const { title, category, course, description, author } = req.body;
     if (!title || !category) {
@@ -139,19 +166,19 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
       return res.status(400).json({ error: 'Title and Category are required.' });
     }
     const record = {
-      id:          uuidv4(),
-      title:       title.trim(),
-      category:    category.trim(),
-      course:      (course || 'General').trim(),
-      description: (description || '').trim(),
-      author:      (author || 'Anonymous').trim(),
-      fileName:    req.file ? req.file.filename : null,
-      filePath:    req.file ? `/uploads/${req.file.filename}` : null,
-      originalName:req.file ? req.file.originalname : null,
-      fileSize:    req.file ? formatSize(req.file.size) : 'N/A',
-      ext:         req.file ? path.extname(req.file.originalname).toLowerCase().slice(1) : 'pdf',
-      date:        new Date().toISOString().slice(0, 10),
-      downloads:   0,
+      id:           uuidv4(),
+      title:        title.trim(),
+      category:     category.trim(),
+      course:       (course || 'General').trim(),
+      description:  (description || '').trim(),
+      author:       (author || 'Anonymous').trim(),
+      fileName:     req.file ? req.file.filename : null,
+      filePath:     req.file ? `/uploads/${req.file.filename}` : null,
+      originalName: req.file ? req.file.originalname : null,
+      fileSize:     req.file ? formatSize(req.file.size) : 'N/A',
+      ext:          req.file ? path.extname(req.file.originalname).toLowerCase().slice(1) : 'pdf',
+      date:         new Date().toISOString().slice(0, 10),
+      downloads:    0,
     };
     const db = readDB();
     db.push(record);
@@ -209,9 +236,10 @@ app.use((err, req, res, next) => {
    START SERVER
 ────────────────────────────────────────── */
 app.listen(PORT, () => {
-  console.log(`\n🚀 FPK Archive backend running at http://localhost:${PORT}`);
+  console.log(`\n\uD83D\uDE80 FPK Archive backend running at http://localhost:${PORT}`);
   console.log(`   POST http://localhost:${PORT}/api/auth/register`);
   console.log(`   POST http://localhost:${PORT}/api/auth/login`);
   console.log(`   GET  http://localhost:${PORT}/api/files`);
-  console.log(`   POST http://localhost:${PORT}/api/upload\n`);
+  console.log(`   POST http://localhost:${PORT}/api/upload`);
+  console.log(`   GET  http://localhost:${PORT}/api/auth/users  [admin token required]\n`);
 });
