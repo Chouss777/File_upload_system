@@ -153,15 +153,24 @@
       <div class="brand-stats">
         <div class="brand-stat">
           <div class="s-icon"><i class="fa-solid fa-file"></i></div>
-          <div class="s-info"><div class="s-val">500+</div><div class="s-lbl">Files in the archive</div></div>
+          <div class="s-info">
+            <div class="s-val" id="stat-files">—</div>
+            <div class="s-lbl">Files in the archive</div>
+          </div>
         </div>
         <div class="brand-stat">
           <div class="s-icon" style="background:rgba(77,212,172,.1);color:var(--accent3);"><i class="fa-solid fa-users"></i></div>
-          <div class="s-info"><div class="s-val">120+</div><div class="s-lbl">Active contributors</div></div>
+          <div class="s-info">
+            <div class="s-val" id="stat-users">—</div>
+            <div class="s-lbl">Active contributors</div>
+          </div>
         </div>
         <div class="brand-stat">
           <div class="s-icon" style="background:rgba(91,143,249,.1);color:#5b8ff9;"><i class="fa-solid fa-download"></i></div>
-          <div class="s-info"><div class="s-val">8.4K</div><div class="s-lbl">Total downloads</div></div>
+          <div class="s-info">
+            <div class="s-val" id="stat-downloads">—</div>
+            <div class="s-lbl">Total downloads</div>
+          </div>
         </div>
       </div>
     </div>
@@ -234,6 +243,7 @@
 <script>
   let selectedRole = 'student';
 
+  /* ── ROLE SELECTOR ── */
   function selectRole(role) {
     selectedRole = role;
     document.getElementById('role-student').classList.toggle('active', role === 'student');
@@ -241,6 +251,7 @@
     clearError();
   }
 
+  /* ── PASSWORD TOGGLE ── */
   function togglePwd() {
     const inp = document.getElementById('password');
     const ico = document.getElementById('eye-icon');
@@ -248,6 +259,7 @@
     else                         { inp.type = 'password'; ico.className = 'fa-solid fa-eye'; }
   }
 
+  /* ── ERROR HANDLING ── */
   function showError(msg) {
     const box = document.getElementById('error-box');
     document.getElementById('error-msg').textContent = msg;
@@ -261,9 +273,9 @@
       setTimeout(() => { el.style.borderColor = ''; el.classList.remove('shake'); }, 800);
     });
   }
-
   function clearError() { document.getElementById('error-box').classList.remove('show'); }
 
+  /* ── LOGIN ── */
   async function doLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
@@ -277,7 +289,7 @@
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in…';
 
     try {
-      const res  = await fetch('http://localhost:3000/api/auth/login', {
+      const res  = await fetch('/api/auth/login', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ username, password, role: selectedRole }),
@@ -304,6 +316,7 @@
     }
   }
 
+  /* ── MISC ── */
   function goAdmin() { selectRole('admin'); document.getElementById('username').focus(); }
   function showForgot() { showError('Password reset is not available. Contact your administrator.'); }
 
@@ -311,6 +324,36 @@
   ['username','password'].forEach(id => {
     document.getElementById(id).addEventListener('input', clearError);
   });
+
+  /* ── REAL-TIME STATS ── */
+  function animateCount(id, target) {
+    const el    = document.getElementById(id);
+    const steps = 40;
+    let   count = 0;
+    const inc   = Math.max(1, Math.ceil(target / steps));
+    const timer = setInterval(() => {
+      count += inc;
+      if (count >= target) { count = target; clearInterval(timer); }
+      el.textContent = count.toLocaleString();
+    }, 40);
+  }
+
+  async function loadStats() {
+    try {
+      const res  = await fetch('/api/stats');
+      const data = await res.json();
+      animateCount('stat-files',     data.files);
+      animateCount('stat-users',     data.users);
+      animateCount('stat-downloads', data.downloads);
+    } catch {
+      document.getElementById('stat-files').textContent     = '—';
+      document.getElementById('stat-users').textContent     = '—';
+      document.getElementById('stat-downloads').textContent = '—';
+    }
+  }
+
+  loadStats();
+  setInterval(loadStats, 30000); // refresh every 30 seconds
 </script>
 </body>
 </html>

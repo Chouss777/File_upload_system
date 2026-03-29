@@ -20,6 +20,15 @@ app.use(express.json());
 app.use('/uploads', express.static(UPLOADS_PATH));
 
 /* ──────────────────────────────────────────
+   SERVE STATIC HTML FILES
+────────────────────────────────────────── */
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+/* ──────────────────────────────────────────
    DATABASE HELPERS
 ────────────────────────────────────────── */
 function readDB()      { try { return JSON.parse(fs.readFileSync(DB_PATH,    'utf-8')); } catch { return []; } }
@@ -34,9 +43,7 @@ function formatSize(bytes) {
 }
 
 /* ──────────────────────────────────────────
-   ADMIN TOKEN GUARD (simple header-based)
-   Pass header:  x-admin-token: fpk-admin-2026
-   Used by admin.html when calling /api/auth/users
+   ADMIN TOKEN GUARD
 ────────────────────────────────────────── */
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'fpk-admin-2026';
 function requireAdmin(req, res, next) {
@@ -76,7 +83,6 @@ app.post('/api/auth/register', async (req, res) => {
     if (!username || !password)
       return res.status(400).json({ error: 'Username and password are required.' });
 
-    /* Password strength: min 6 chars, at least one letter and one number */
     const strongPwd = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
     if (!strongPwd.test(password))
       return res.status(400).json({ error: 'Password must be at least 6 characters and include a letter and a number.' });
@@ -224,6 +230,24 @@ app.patch('/api/files/:id/download', (req, res) => {
   res.json({ downloads: record.downloads });
 });
 
+/* ══════════════════════════════════════════
+   STATS ROUTE  ← NEW
+══════════════════════════════════════════ */
+
+/* GET STATS — GET /api/stats */
+app.get('/api/stats', (req, res) => {
+  try {
+    const files          = readDB();
+    const users          = readUsers();
+    const totalDownloads = files.reduce((sum, f) => sum + (f.downloads || 0), 0);
+    res.json({
+      files:     files.length,
+      users:     users.length,
+      downloads: totalDownloads,
+    });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 /* ──────────────────────────────────────────
    GLOBAL ERROR HANDLER
 ────────────────────────────────────────── */
@@ -236,10 +260,11 @@ app.use((err, req, res, next) => {
    START SERVER
 ────────────────────────────────────────── */
 app.listen(PORT, () => {
-  console.log(`\n\uD83D\uDE80 FPK Archive backend running at http://localhost:${PORT}`);
+  console.log(`\n🚀 FPK Archive backend running at http://localhost:${PORT}`);
   console.log(`   POST http://localhost:${PORT}/api/auth/register`);
   console.log(`   POST http://localhost:${PORT}/api/auth/login`);
   console.log(`   GET  http://localhost:${PORT}/api/files`);
   console.log(`   POST http://localhost:${PORT}/api/upload`);
+  console.log(`   GET  http://localhost:${PORT}/api/stats`);
   console.log(`   GET  http://localhost:${PORT}/api/auth/users  [admin token required]\n`);
 });
