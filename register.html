@@ -220,17 +220,6 @@
       </div>
     </div>
 
-    <div class="field-group">
-      <label class="field-label">Role</label>
-      <div class="field-wrap">
-        <i class="fa-solid fa-graduation-cap field-icon"></i>
-        <select id="role" class="field-input" style="cursor:pointer; padding-left:38px;">
-          <option value="student">🎓 Student</option>
-          <option value="admin">🛡️ Admin</option>
-        </select>
-      </div>
-    </div>
-
     <button class="submit-btn" id="register-btn" onclick="doRegister()">
       <i class="fa-solid fa-user-plus"></i> Create Account
     </button>
@@ -292,7 +281,6 @@
     const username = document.getElementById('username').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
     const confirm  = document.getElementById('confirm').value;
-    const role     = document.getElementById('role').value;
     const btn      = document.getElementById('register-btn');
 
     document.getElementById('error-box').classList.remove('show');
@@ -311,7 +299,7 @@
       const res  = await fetch('http://localhost:3000/api/auth/register', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ username, password, role, display }),
+        body:    JSON.stringify({ username, password, display }),
       });
       const data = await res.json();
       if (!res.ok) {
