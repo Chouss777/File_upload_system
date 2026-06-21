@@ -79,7 +79,7 @@ const upload = multer({
 /* REGISTER — POST /api/auth/register */
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { username, password, role, display } = req.body;
+    const { username, password, display } = req.body; // role is now decided server-side
     if (!username || !password)
       return res.status(400).json({ error: 'Username and password are required.' });
 
@@ -91,12 +91,15 @@ app.post('/api/auth/register', async (req, res) => {
     if (users.find(u => u.username === username.trim().toLowerCase()))
       return res.status(409).json({ error: 'Username already exists.' });
 
-    const hashed  = await bcrypt.hash(password, 10);
+    const hashed       = await bcrypt.hash(password, 10);
+    const isFirstUser  = users.length === 0; // only the very first account becomes admin
+    const effectiveRole = isFirstUser ? 'admin' : 'student';
+
     const newUser = {
       id:        uuidv4(),
       username:  username.trim().toLowerCase(),
       password:  hashed,
-      role:      role === 'admin' ? 'admin' : 'student',
+      role:      effectiveRole,
       display:   (display || username).trim(),
       createdAt: new Date().toISOString(),
     };
@@ -231,7 +234,7 @@ app.patch('/api/files/:id/download', (req, res) => {
 });
 
 /* ══════════════════════════════════════════
-   STATS ROUTE  ← NEW
+   STATS ROUTE
 ══════════════════════════════════════════ */
 
 /* GET STATS — GET /api/stats */
