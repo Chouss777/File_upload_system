@@ -76,10 +76,12 @@ const upload = multer({
    AUTH ROUTES
 ══════════════════════════════════════════ */
 
-/* REGISTER — POST /api/auth/register */
+/* REGISTER — POST /api/auth/register
+   -> Always creates a student account (no direct admin signup).
+*/
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { username, password, display } = req.body; // role is now decided server-side
+    const { username, password, display } = req.body;
     if (!username || !password)
       return res.status(400).json({ error: 'Username and password are required.' });
 
@@ -91,15 +93,12 @@ app.post('/api/auth/register', async (req, res) => {
     if (users.find(u => u.username === username.trim().toLowerCase()))
       return res.status(409).json({ error: 'Username already exists.' });
 
-    const hashed       = await bcrypt.hash(password, 10);
-    const isFirstUser  = users.length === 0; // only the very first account becomes admin
-    const effectiveRole = isFirstUser ? 'admin' : 'student';
-
+    const hashed  = await bcrypt.hash(password, 10);
     const newUser = {
       id:        uuidv4(),
       username:  username.trim().toLowerCase(),
       password:  hashed,
-      role:      effectiveRole,
+      role:      'student', // default role; admin is granted via master-key promotion
       display:   (display || username).trim(),
       createdAt: new Date().toISOString(),
     };
@@ -138,6 +137,44 @@ app.post('/api/auth/login', async (req, res) => {
       user: { id: user.id, username: user.username, role: user.role, display: user.display },
     });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* MASTER-KEY PROMOTION — POST /api/auth/promote
+   -> Promote an existing user to admin using the same ADMIN_TOKEN used for admin API access.
+*/
+app.post('/api/auth/promote', (req, res) => {
+  const { masterToken, userId } = req.body;
+
+  // Check secret token (server-side, not hard-coded in frontend)
+  if (masterToken !== ADMIN_TOKEN) {
+    return res.status(403).json({ error: 'Token maître invalide' });
+  }
+
+  const users = readUsers();
+  const idx   = users.findIndex(u => u.id === userId);
+
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Utilisateur introuvable' });
+  }
+
+  if (users[idx].role === 'admin') {
+    return res.status(400).json({ error: 'Cet utilisateur est déjà administrateur' });
+  }
+
+  users[idx].role = 'admin';
+  writeUsers(users);
+
+  console.log(`[PROMOTE] ${users[idx].username} is now admin via master key.`);
+  return res.json({
+    message: '🎉 Félicitations ! Vous êtes maintenant administrateur.',
+    user: {
+      id: users[idx].id,
+      username: users[idx].username,
+      role: users[idx].role,
+      display: users[idx].display,
+      createdAt: users[idx].createdAt,
+    },
+  });
 });
 
 /* LIST USERS — GET /api/auth/users  [admin only] */
@@ -266,6 +303,7 @@ app.listen(PORT, () => {
   console.log(`\n🚀 FPK Archive backend running at http://localhost:${PORT}`);
   console.log(`   POST http://localhost:${PORT}/api/auth/register`);
   console.log(`   POST http://localhost:${PORT}/api/auth/login`);
+  console.log(`   POST http://localhost:${PORT}/api/auth/promote`);
   console.log(`   GET  http://localhost:${PORT}/api/files`);
   console.log(`   POST http://localhost:${PORT}/api/upload`);
   console.log(`   GET  http://localhost:${PORT}/api/stats`);
